@@ -1,5 +1,18 @@
-# example values
-
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5433/search-engine
+    username: search-engine
+    password: search-engine
+    driverClassName: org.postgresql.Driver
 indexing-settings:
   sites:
     - url: https://www.lenta.ru

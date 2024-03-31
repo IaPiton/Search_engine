@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  db:
+    container_name: search-engine
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: search-engine
+      POSTGRES_PASSWORD: search-engine
+      POSTGRES_DB: search-engine
+    ports:
+      - "5433:5432"
