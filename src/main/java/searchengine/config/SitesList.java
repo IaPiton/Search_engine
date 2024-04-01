@@ -1,5 +1,6 @@
 package searchengine.config;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -8,8 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Component
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "indexing-settings")

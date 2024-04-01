@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "SiteConfig")
+@Table(name = "site")
 public class Site {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
