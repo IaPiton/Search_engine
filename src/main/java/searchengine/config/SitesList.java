@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import searchengine.dto.site.SiteDto;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "indexing-settings")
 public class SitesList {
-    private List<SiteConfig> sites;
+    private List<SiteDto> sites;
 }

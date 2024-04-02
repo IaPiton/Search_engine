@@ -6,11 +6,22 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Data
+
 @Component
-@RequiredArgsConstructor
+
 public class IsStart {
-    private AtomicBoolean start = new AtomicBoolean(false);
+   private static AtomicBoolean start = new AtomicBoolean(false);
+    public static boolean getStart() {
+        return start.get();
+    }
+
+   public    static void setStart(boolean start) {
+        IsStart.start.set(start);
+    }
+
+
+
+
 
 
 }
