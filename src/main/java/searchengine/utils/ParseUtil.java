@@ -10,9 +10,11 @@ import searchengine.config.IsStart;
 import searchengine.dto.site.SiteDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import searchengine.services.datebase.DateBaseService;
 
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -25,39 +27,39 @@ public class ParseUtil extends RecursiveAction {
     private SiteDto siteDto;
     private ConcurrentSkipListSet<String> sitesMap = new ConcurrentSkipListSet<>();
     private String url;
+    private DateBaseService dateBaseService;
 
-    public ParseUtil(SiteDto siteDto, String url) {
-        this.siteDto = siteDto;
-        this.url = url;
-    }
+    private Integer code;
 
-    public ParseUtil(SiteDto siteDto, ConcurrentSkipListSet<String> sitesMap, String url) {
+    public ParseUtil(SiteDto siteDto, ConcurrentSkipListSet<String> sitesMap, String url, DateBaseService dateBaseService) {
         this.siteDto = siteDto;
         this.sitesMap = sitesMap;
         this.url = url;
+        this.dateBaseService = dateBaseService;
     }
 
     @Override
     public void compute() {
-        if (IsStart.getStart()) {
-
-            Document document = connection(url);
-            sitesMap.add(document.baseUri());
-            Elements elements = document.select("a");
-            List<String> list = new ArrayList<>();
-            for (Element element : elements) {
-                String url = siteDto.getUrl();
-                String href = element.absUrl("href");
-                if (href.contains(url)
-                        && !href.contains("#")
-                        && !isFile(href)) {
-                    list.add(element.absUrl("href"));
+        try {
+            if (IsStart.getStart()) {
+                Document document = connection(url);
+                dateBaseService.createPage(url, code, document.toString(), siteDto);
+                sitesMap.add(document.baseUri());
+                Elements elements = document.select("a");
+                List<String> list = new ArrayList<>();
+                for (Element element : elements) {
+                    String url = siteDto.getUrl();
+                    String href = element.absUrl("href");
+                    if (href.contains(url)
+                            && !href.contains("#")
+                            && !isFile(href)) {
+                        list.add(href);
+                    }
                 }
-            }
                 List<ParseUtil> taskList = new ArrayList<>();
                 for (String child : list) {
                     if (!sitesMap.contains(child)) {
-                        ParseUtil task = new ParseUtil(siteDto,  sitesMap, child);
+                        ParseUtil task = new ParseUtil(siteDto, sitesMap, child, dateBaseService);
                         task.fork();
                         taskList.add(task);
                         sitesMap.add(child);
@@ -66,37 +68,46 @@ public class ParseUtil extends RecursiveAction {
                 for (ParseUtil task : taskList) {
                     task.join();
                 }
-
-
-
-        }
-        System.out.println(sitesMap.size());
-    }
-
-        private Document connection (String url){
-            Document document = null;
-            try {
-                document = Jsoup.connect(url).get();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-            return document;
-
-        }
-        private static boolean isFile (String link){
-            link.toLowerCase();
-            return link.contains(".jpg")
-             || link.contains(".jpeg")
-             || link.contains(".png")
-             || link.contains(".gif")
-             || link.contains(".webp")
-             || link.contains(".pdf")
-             || link.contains(".eps")
-             || link.contains(".xlsx")
-             || link.contains(".doc")
-             || link.contains(".pptx")
-             || link.contains(".docx")
-             || link.contains("?_ga");
+            System.out.println(sitesMap.size());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    private Document connection(String url) {
+        Document document = null;
+        try {
+            Thread.sleep(650);
+            document = Jsoup.connect(url).get();
+            code = document.connection().response().statusCode();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (code != 200) {
+            return null;
+        }
+        return document;
+
+    }
+
+    private static boolean isFile(String link) {
+        link.toLowerCase();
+        return link.contains(".jpg")
+                || link.contains(".jpeg")
+                || link.contains(".png")
+                || link.contains(".gif")
+                || link.contains(".webp")
+                || link.contains(".pdf")
+                || link.contains(".eps")
+                || link.contains(".xlsx")
+                || link.contains(".doc")
+                || link.contains(".pptx")
+                || link.contains(".docx")
+                || link.contains("?_ga");
+    }
+}
 

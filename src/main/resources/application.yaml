@@ -15,9 +15,9 @@ spring:
     driverClassName: org.postgresql.Driver
 indexing-settings:
   sites:
-#    - url: https://lenta.ru
+#    - url: http://lenta.ru
 #      name: Лента.ру
-#    - url: https://skillbox.ru
+#    - url: http://skillbox.ru
 #      name: Skillbox
     - url: https://playback.ru
       name: PlayBack.Ru

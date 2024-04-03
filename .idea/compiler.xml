@@ -16,6 +16,9 @@
         <module name="SearchEngine" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Search_engine" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
