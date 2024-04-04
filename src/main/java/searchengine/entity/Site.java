@@ -35,6 +35,6 @@ public class Site {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Page> pages = new HashSet<>();
 }

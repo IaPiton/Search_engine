@@ -39,6 +39,7 @@ public class IndexingService {
         if (IsStart.getStart()) {
             return new ResponseDto(false, "Индексация уже запущена");
         }
+        sitesMap.clear();
         IsStart.setStart(true);
         dateBaseService.deleteAll();
         List<SiteDto> sitesList = sites.getSites();
@@ -51,16 +52,20 @@ public class IndexingService {
 
     @Async
     public void indexingSites(SiteDto siteDto) {
-        SiteDto site = siteCreate(siteDto, Status.INDEXING);
+        SiteDto site = siteCreate(siteDto, Status.INDEXING, "Ошибок нет");
         ForkJoinPool pool = new ForkJoinPool();
         ParseUtil parseUtil = new ParseUtil(site, sitesMap, site.getUrl(), dateBaseService);
         pool.invoke(parseUtil);
         pool.shutdown();
 
         if(isStart.getStart()){
-            siteCreate(site, Status.INDEXED);
+            siteCreate(site, Status.INDEXED, "Индексация закончена без ошибок");
         }
-        if(pool.isTerminated()){
+        else {
+            siteCreate(site, Status.FAILED, "Индексация остановлена");
+        }
+
+        if(siteRepository.countByStatus(Status.INDEXING) == 0) {
             IsStart.setStart(false);
         }
     }
@@ -68,8 +73,9 @@ public class IndexingService {
 
 
     @Transactional
-    public SiteDto siteCreate(SiteDto siteDto, Status status) {
+    public SiteDto siteCreate(SiteDto siteDto, Status status, String error) {
         siteDto.setStatus(status);
+        siteDto.setLastError(error);
         SiteDto site = siteMapper.siteToSiteDto(siteRepository.saveAndFlush(siteMapper.siteDtoToSite(siteDto)));
         return site;
     }
@@ -80,11 +86,8 @@ public class IndexingService {
         }
         IsStart.setStart(false);
         List<Site> sites = siteRepository.findAll();
-        for (Site site : sites) {
-            if (!site.getStatus().equals(Status.INDEXED)) {
-               siteCreate(siteMapper.siteToSiteDto(site), Status.FAILED);
-            }
-         }
+
+
         return new ResponseDto(true);
         }
 

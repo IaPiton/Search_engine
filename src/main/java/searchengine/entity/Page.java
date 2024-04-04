@@ -5,7 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-
+@Data
 @Entity
 @Table(name = "Page")
 public class Page {
@@ -24,7 +24,7 @@ public class Page {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id")
     private Site site;
 
