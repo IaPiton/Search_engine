@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import searchengine.config.ConnectionConfig;
 import searchengine.config.IsStart;
 import searchengine.config.SitesList;
 import searchengine.dto.ResponseDto;
@@ -28,7 +29,7 @@ public class IndexingService {
 
     private final IsStart isStart;
     private final SiteRepository siteRepository;
-    private final PageRepository pageRepository;
+    private final ConnectionConfig connectionConfig;
     private final SitesList sites;
     private final DateBaseService dateBaseService;
     private final SiteMapper siteMapper;
@@ -37,7 +38,7 @@ public class IndexingService {
 
     public ResponseDto startIndexing() {
         if (IsStart.getStart()) {
-            return new ResponseDto(false, "Индексация уже запущена");
+            return new ResponseDto(true, "Индексация уже запущена");
         }
         sitesMap.clear();
         IsStart.setStart(true);
@@ -54,17 +55,15 @@ public class IndexingService {
     public void indexingSites(SiteDto siteDto) {
         SiteDto site = siteCreate(siteDto, Status.INDEXING, "Ошибок нет");
         ForkJoinPool pool = new ForkJoinPool();
-        ParseUtil parseUtil = new ParseUtil(site, sitesMap, site.getUrl(), dateBaseService);
+        ParseUtil parseUtil = new ParseUtil(site, sitesMap, site.getUrl(), dateBaseService, connectionConfig);
         pool.invoke(parseUtil);
         pool.shutdown();
-
         if(isStart.getStart()){
             siteCreate(site, Status.INDEXED, "Индексация закончена без ошибок");
         }
         else {
             siteCreate(site, Status.FAILED, "Индексация остановлена");
         }
-
         if(siteRepository.countByStatus(Status.INDEXING) == 0) {
             IsStart.setStart(false);
         }

@@ -17,8 +17,11 @@ indexing-settings:
   sites:
 #    - url: http://lenta.ru
 #      name: Лента.ру
-    - url: http://skillbox.ru
+    - url: https://skillbox.ru
       name: Skillbox
     - url: https://playback.ru
       name: PlayBack.Ru
 
+connection-config:
+  userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36
+  referer: https://skillbox.ru

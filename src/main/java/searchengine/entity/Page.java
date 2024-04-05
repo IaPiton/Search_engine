@@ -15,7 +15,7 @@ public class Page {
     private Integer id;
 
     @PrimaryKeyJoinColumn
-    @Column(name = "path", nullable = false)
+    @Column(name = "path", columnDefinition = "VARCHAR(900)", nullable = false)
     private String path;
 
     @Column(name = "code", nullable = false)

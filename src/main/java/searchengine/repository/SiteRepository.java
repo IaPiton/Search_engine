@@ -9,4 +9,6 @@ import searchengine.entity.Status;
 public interface SiteRepository extends JpaRepository<Site, Long> {
 
     int countByStatus(Status status);
+
+    Site findByUrl(String url);
 }

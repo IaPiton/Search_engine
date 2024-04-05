@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 import searchengine.entity.Page;
 @Repository
 public interface PageRepository extends JpaRepository<Page, Long> {
+    int countBySiteId(Integer id);
 }
