@@ -3,7 +3,6 @@ package searchengine.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 import searchengine.dto.site.SiteDto;
 import searchengine.entity.Site;
 

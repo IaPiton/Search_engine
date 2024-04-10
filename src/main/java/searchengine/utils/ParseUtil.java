@@ -1,15 +1,13 @@
 package searchengine.utils;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 import searchengine.config.ConnectionConfig;
-import searchengine.config.IsStart;
+import searchengine.config.StartAndStop;
 import searchengine.dto.site.SiteDto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.RecursiveAction;
+
 @Log4j2
 @Component
 @NoArgsConstructor
@@ -46,7 +45,7 @@ public class ParseUtil extends RecursiveAction {
     @Override
     public void compute() {
         try {
-            if(IsStart.getStart()) {
+            if (StartAndStop.getStart()) {
                 Document document = connection(url);
                 if (document != null) {
                     dateBaseService.createPage(url, code, document.toString(), siteDto);
@@ -76,7 +75,6 @@ public class ParseUtil extends RecursiveAction {
                     }
                 }
             }
-            System.out.println(sitesMap.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +103,6 @@ public class ParseUtil extends RecursiveAction {
     }
 
     private static boolean isFile(String link) {
-        link.toLowerCase();
         return link.contains(".jpg")
                 || link.contains(".jpeg")
                 || link.contains(".png")

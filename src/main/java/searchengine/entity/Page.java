@@ -24,7 +24,7 @@ public class Page {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "site_id")
     private Site site;
 

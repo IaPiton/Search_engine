@@ -1,6 +1,5 @@
 package searchengine.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +34,6 @@ public class Site {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
     private Set<Page> pages = new HashSet<>();
 }
