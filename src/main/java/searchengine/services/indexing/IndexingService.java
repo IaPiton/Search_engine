@@ -1,6 +1,7 @@
 package searchengine.services.indexing;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ForkJoinPool;
-
+@Log4j2
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -61,17 +62,17 @@ public class IndexingService {
     @Transactional(readOnly = true)
     public void finishedIndexing(SiteDto siteDto) {
         if(StartAndStop.getStart()){
+            log.info("Индексация сайта " + siteDto.getUrl() + "  закончена без ошибок");
             siteCreate(siteDto, Status.INDEXED, "Индексация закончена без ошибок");
         }
         else {
+            log.info("Индексация сайта " + siteDto.getUrl() + " остановлена");
             siteCreate(siteDto, Status.FAILED, "Индексация остановлена");
         }
         if(siteRepository.countByStatus(Status.INDEXING) == 0) {
             StartAndStop.setStart(false);
         }
     }
-
-
 
     public SiteDto siteCreate(SiteDto siteDto, Status status, String error) {
         siteDto.setStatus(status);
