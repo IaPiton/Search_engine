@@ -1,6 +1,7 @@
 package searchengine.services.datebase;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.dto.page.PageDto;
@@ -9,8 +10,9 @@ import searchengine.mapper.PageMapper;
 import searchengine.mapper.SiteMapper;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
-
+@Log4j2
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DateBaseService {
 
@@ -19,7 +21,7 @@ public class DateBaseService {
     private final SiteMapper siteMapper;
     private final PageMapper pageMapper;
 
-    @Transactional
+
     public void createPage(String path, Integer code, String content, SiteDto siteDto) {
         try {
             PageDto pageDto = new PageDto();
@@ -33,9 +35,10 @@ public class DateBaseService {
         }
     }
 
-    @Transactional
+
     public void deleteAll() {
         pageRepository.deleteAll();
         siteRepository.deleteAll();
+        log.info("Очистка базы данных успешна");
     }
 }

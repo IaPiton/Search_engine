@@ -42,6 +42,7 @@ public class IndexingService {
         sitesMap.clear();
         StartAndStop.setStart(true);
         dateBaseService.deleteAll();
+
         List<SiteDto> sitesList = sites.getSites();
 
         for (SiteDto site : sitesList) {
