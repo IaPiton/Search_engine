@@ -1,11 +1,13 @@
 package searchengine.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -34,6 +36,7 @@ public class Site {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL)
-    private Set<Page> pages = new HashSet<>();
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "site", fetch = FetchType.LAZY)
+
+    private List<Page> pages = new ArrayList<>();
 }

@@ -15,6 +15,7 @@ import searchengine.services.datebase.DateBaseService;
 
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,34 +48,29 @@ public class ParseUtil extends RecursiveAction {
         try {
             if (StartAndStop.getStart()) {
                 Document document = connection(url);
-                if (document != null) {
-                    dateBaseService.createPage(url, code, document.toString(), siteDto);
-                    sitesMap.add(document.baseUri());
-                    Elements elements = document.select("a");
-                    List<String> list = new ArrayList<>();
-                    for (Element element : elements) {
-                        String url = siteDto.getUrl();
-                        String href = element.absUrl("href");
-                        if (href.contains(url)
-                                && !href.contains("#")
-                                && !isFile(href)) {
-                            list.add(href);
-                        }
-                    }
-                    List<ParseUtil> taskList = new ArrayList<>();
-                    for (String child : list) {
-                        if (!sitesMap.contains(child)) {
-                            ParseUtil task = new ParseUtil(siteDto, sitesMap, child, dateBaseService, connectionConfig);
-                            task.fork();
-                            taskList.add(task);
-                            sitesMap.add(child);
-                        }
-                    }
-                    for (ParseUtil task : taskList) {
-                        task.join();
+                dateBaseService.createPage(url, code, checkContent(document), siteDto);
+//                sitesMap.add(document.baseUri());
+                Elements elements = document.select("a");
+                List<ParseUtil> taskList = new ArrayList<>();
+                for (Element element : elements) {
+                    String url = siteDto.getUrl();
+                    String href = element.absUrl("href");
+                    if (href.contains(url)
+                            && !href.contains("#")
+                            && !isFile(href)
+                            && !sitesMap.contains(href)) {
+                        ParseUtil task = new ParseUtil(siteDto, sitesMap, href, dateBaseService, connectionConfig);
+                        task.fork();
+                        taskList.add(task);
+                        sitesMap.add(href);
                     }
                 }
+                for (ParseUtil task : taskList) {
+                    task.join();
+                }
             }
+        } catch (NullPointerException e){
+            dateBaseService.createPage(url, code, " ", siteDto);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,23 +79,35 @@ public class ParseUtil extends RecursiveAction {
     private Document connection(String url) {
         Document document = null;
         try {
+            code = 0;
             Thread.sleep(650);
             document = Jsoup.connect(url)
                     .userAgent(connectionConfig.getUserAgent())
                     .referrer(connectionConfig.getReferer())
                     .get();
             code = document.connection().response().statusCode();
+        } catch (ConnectException e) {
+            code = 500;
+            log.info("connect exception");
         } catch (SocketException e) {
-            e.printStackTrace();
+            code = 500;
+            log.info("socket exception");
         } catch (IOException | InterruptedException | RuntimeException e) {
             code = 404;
-            log.info(url + " " + code);
         }
-        if (code != 200) {
-            return null;
+        finally {
+
         }
         return document;
 
+    }
+
+    private String checkContent(Document document) {
+        try {
+            return document.toString();
+        } catch (NullPointerException e) {
+            return "";
+        }
     }
 
     private static boolean isFile(String link) {

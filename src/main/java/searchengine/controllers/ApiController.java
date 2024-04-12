@@ -22,7 +22,6 @@ public class ApiController {
 
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
-        log.info("ApiController.statistics() - start");
         return ResponseEntity.ok(statisticsService.getStatistics());
     }
 

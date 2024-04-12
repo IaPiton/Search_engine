@@ -1,7 +1,9 @@
 package searchengine.mapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
@@ -11,7 +13,7 @@ import searchengine.entity.Site;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-10T16:39:47+0300",
+    date = "2024-04-11T15:28:22+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.10 (Amazon.com Inc.)"
 )
 @Component
@@ -32,7 +34,7 @@ public class SiteMapperImpl implements SiteMapper {
         site.setName( siteDto.getName() );
         Set<Page> set = siteDto.getPages();
         if ( set != null ) {
-            site.setPages( new LinkedHashSet<Page>( set ) );
+            site.setPages( new ArrayList<Page>( set ) );
         }
 
         site.setStatusTime( LocalDateTime.now() );
@@ -54,9 +56,9 @@ public class SiteMapperImpl implements SiteMapper {
         siteDto.setLastError( site.getLastError() );
         siteDto.setUrl( site.getUrl() );
         siteDto.setName( site.getName() );
-        Set<Page> set = site.getPages();
-        if ( set != null ) {
-            siteDto.setPages( new LinkedHashSet<Page>( set ) );
+        List<Page> list = site.getPages();
+        if ( list != null ) {
+            siteDto.setPages( new LinkedHashSet<Page>( list ) );
         }
 
         return siteDto;

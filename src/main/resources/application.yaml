@@ -13,14 +13,13 @@ spring:
     username: search-engine
     password: search-engine
     driverClassName: org.postgresql.Driver
+
 indexing-settings:
   sites:
-#    - url: http://lenta.ru
+#    - url: https://lenta.ru
 #      name: Лента.ру
-#    - url: https://skillbox.ru
-#      name: Skillbox
-    - url: http://музей-ямщика.рф
-      name: Музей Ямщика
+    - url: https://skillbox.ru
+      name: Skillbox
     - url: https://playback.ru
       name: PlayBack.Ru
 

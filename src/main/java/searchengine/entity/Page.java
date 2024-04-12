@@ -1,9 +1,8 @@
 package searchengine.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 
-
-import javax.persistence.*;
 
 @Data
 @Entity
@@ -15,7 +14,7 @@ public class Page {
     private Integer id;
 
     @PrimaryKeyJoinColumn
-    @Column(name = "path", columnDefinition = "VARCHAR(900)", nullable = false)
+    @Column(name = "path", columnDefinition = "TEXT", nullable = false)
     private String path;
 
     @Column(name = "code", nullable = false)
