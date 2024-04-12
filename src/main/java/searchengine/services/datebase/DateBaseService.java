@@ -12,6 +12,7 @@ import searchengine.mapper.PageMapper;
 import searchengine.mapper.SiteMapper;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
+
 @Log4j2
 @Service
 
@@ -36,39 +37,65 @@ public class DateBaseService {
             e.printStackTrace();
         }
     }
+
 @Transactional
     public void deleteAll() {
+
         try {
-//        pageRepository.deleteAll();
+            pageRepository.deleteAll();
             siteRepository.deleteAll();
             log.info("Очистка базы данных успешна");
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info("Очистка базы данных не удалась");
         }
     }
 
     @Transactional(readOnly = true)
     public Integer countSitesByStatus(Status status) {
-     return siteRepository.countByStatus(status);
+        return siteRepository.countByStatus(status);
     }
+
     @Transactional
-    public SiteDto siteCreate(SiteDto siteDto, Status status, String error) {
+    public SiteDto createSite(SiteDto siteDto, Status status, String error) {
         siteDto.setStatus(status);
         siteDto.setLastError(error);
         return siteMapper.siteToSiteDto(siteRepository.saveAndFlush(siteMapper.siteDtoToSite(siteDto)));
     }
-@Transactional(readOnly = true)
+
+    @Transactional
+    public void updateStatusSite(SiteDto siteDto, Status status) {
+        Site site = getSiteByName(siteDto.getName());
+        site.setStatus(status);
+        siteRepository.saveAndFlush(site);
+    }
+
+    @Transactional
+    public void updateErrorSite(SiteDto siteDto, String error) {
+        Site site = getSiteByName(siteDto.getName());
+        site.setLastError(error);
+        siteRepository.saveAndFlush(site);
+    }
+
+    @Transactional(readOnly = true)
+    public Site getSiteByName(String name) {
+        return siteRepository.findByName(name);
+    }
+
+    @Transactional(readOnly = true)
     public Long countSite() {
         return siteRepository.count();
     }
+
     @Transactional(readOnly = true)
     public Long countPage() {
         return pageRepository.count();
     }
+
     @Transactional(readOnly = true)
     public Iterable<Site> getAllSites() {
-      return   siteRepository.findAll();
+        return siteRepository.findAll();
     }
+
     @Transactional(readOnly = true)
     public Integer countPageBySiteId(Integer siteId) {
         return pageRepository.countBySiteId(siteId);

@@ -1,13 +1,17 @@
 spring:
+
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
+        limit: 1000
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        delete-dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
+
   datasource:
     url: jdbc:postgresql://localhost:5433/search-engine
     username: search-engine
@@ -25,4 +29,4 @@ indexing-settings:
 
 connection-config:
   userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36
-  referer: https://skillbox.ru
+  referer: http://google.ru

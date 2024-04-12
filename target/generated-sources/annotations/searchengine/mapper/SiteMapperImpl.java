@@ -13,7 +13,7 @@ import searchengine.entity.Site;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-11T15:28:22+0300",
+    date = "2024-04-12T15:58:13+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.10 (Amazon.com Inc.)"
 )
 @Component

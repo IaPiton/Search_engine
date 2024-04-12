@@ -17,7 +17,7 @@ import java.util.Set;
 @Table(name = "site")
 public class Site {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +36,7 @@ public class Site {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "site", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "site")
 
     private List<Page> pages = new ArrayList<>();
 }

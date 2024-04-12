@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import searchengine.config.ConnectionConfig;
 import searchengine.config.StartAndStop;
 import searchengine.config.SitesList;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.site.SiteDto;
 import searchengine.entity.Status;
-import searchengine.mapper.SiteMapper;
+
 import searchengine.services.datebase.DateBaseService;
 import searchengine.utils.ParseUtil;
 
@@ -46,7 +45,7 @@ public class IndexingService {
 
     @Async
     public void createThreadForIndexingSite(SiteDto siteDto) {
-        siteDto = dateBaseService.siteCreate(siteDto, Status.INDEXING, "Ошибок нет");
+        siteDto = dateBaseService.createSite(siteDto, Status.INDEXING, "Ошибок нет");
         ForkJoinPool pool = new ForkJoinPool();
         ParseUtil parseUtil = new ParseUtil(siteDto, sitesMap, siteDto.getUrl(), dateBaseService, connectionConfig);
         pool.invoke(parseUtil);
@@ -57,11 +56,14 @@ public class IndexingService {
     public void finishedIndexing(SiteDto siteDto) {
         if(StartAndStop.getStart()){
             log.info("Индексация сайта " + siteDto.getUrl() + "  закончена без ошибок");
-            dateBaseService.siteCreate(siteDto, Status.INDEXED, "Индексация закончена без ошибок");
+            dateBaseService.updateStatusSite(siteDto, Status.INDEXED);
+            dateBaseService.updateErrorSite(siteDto, "Индексация закончена без ошибок");
+
         }
         else {
             log.info("Индексация сайта " + siteDto.getUrl() + " остановлена");
-            dateBaseService.siteCreate(siteDto, Status.FAILED, "Индексация остановлена");
+            dateBaseService.updateStatusSite(siteDto, Status.FAILED);
+            dateBaseService.updateErrorSite(siteDto, "Индексация остановлена");
         }
         if(dateBaseService.countSitesByStatus(Status.INDEXING) == 0) {
             StartAndStop.setStart(false);

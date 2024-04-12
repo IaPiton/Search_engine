@@ -12,4 +12,5 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
     int countByStatus(Status status);
 
 
+    Site findByName(String name);
 }
