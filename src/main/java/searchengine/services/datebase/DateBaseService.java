@@ -13,9 +13,11 @@ import searchengine.mapper.SiteMapper;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
+
+
 @Log4j2
 @Service
-
+@Transactional
 @RequiredArgsConstructor
 public class DateBaseService {
 
@@ -24,7 +26,7 @@ public class DateBaseService {
     private final SiteMapper siteMapper;
     private final PageMapper pageMapper;
 
-    @Transactional
+
     public void createPage(String path, Integer code, String content, SiteDto siteDto) {
         try {
             PageDto pageDto = new PageDto();
@@ -38,42 +40,31 @@ public class DateBaseService {
         }
     }
 
-@Transactional
-    public void deleteAll() {
-
-        try {
-            pageRepository.deleteAll();
-            siteRepository.deleteAll();
-            log.info("Очистка базы данных успешна");
-        } catch (Exception e) {
-            log.info("Очистка базы данных не удалась");
-        }
-    }
 
     @Transactional(readOnly = true)
     public Integer countSitesByStatus(Status status) {
         return siteRepository.countByStatus(status);
     }
 
-    @Transactional
+
     public SiteDto createSite(SiteDto siteDto, Status status, String error) {
         siteDto.setStatus(status);
         siteDto.setLastError(error);
-        return siteMapper.siteToSiteDto(siteRepository.saveAndFlush(siteMapper.siteDtoToSite(siteDto)));
+        return siteMapper.siteToSiteDto(siteRepository.save(siteMapper.siteDtoToSite(siteDto)));
     }
 
-    @Transactional
+
     public void updateStatusSite(SiteDto siteDto, Status status) {
         Site site = getSiteByName(siteDto.getName());
         site.setStatus(status);
-        siteRepository.saveAndFlush(site);
+        siteRepository.save(site);
     }
 
-    @Transactional
+
     public void updateErrorSite(SiteDto siteDto, String error) {
         Site site = getSiteByName(siteDto.getName());
         site.setLastError(error);
-        siteRepository.saveAndFlush(site);
+        siteRepository.save(site);
     }
 
     @Transactional(readOnly = true)
@@ -100,4 +91,26 @@ public class DateBaseService {
     public Integer countPageBySiteId(Integer siteId) {
         return pageRepository.countBySiteId(siteId);
     }
+
+
+    public void deleterAll() {
+        deleteAllPage();
+        deleteAllSite();
+    }
+
+
+    public void deleteAllSite() {
+        siteRepository.deleteAll();
+        log.info("Очистка сайтов успешна");
+    }
+
+    @Transactional(readOnly = true)
+    public void deleteAllPage() {
+        pageRepository.deleteAllPages();
+        log.info("Очистка страниц успешна");
+    }
+
+
 }
+
+

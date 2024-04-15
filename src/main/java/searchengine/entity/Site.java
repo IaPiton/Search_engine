@@ -36,7 +36,7 @@ public class Site {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "site")
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
 
     private List<Page> pages = new ArrayList<>();
 }

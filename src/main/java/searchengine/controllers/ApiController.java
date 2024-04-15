@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.services.indexing.IndexingService;
+import searchengine.services.indexing.IndexingServiceImpl;
 import searchengine.services.statistics.StatisticsService;
 @Log4j2
 @RestController

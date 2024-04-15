@@ -1,15 +1,13 @@
 spring:
 
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        limit: 1000
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        delete-dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
 
   datasource:

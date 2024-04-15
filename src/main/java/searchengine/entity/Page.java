@@ -2,6 +2,8 @@ package searchengine.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 
 @Data
@@ -26,6 +28,7 @@ public class Page {
     @ManyToOne
     @JoinColumn(name = "site_id")
     private Site site;
+
 
 
 
