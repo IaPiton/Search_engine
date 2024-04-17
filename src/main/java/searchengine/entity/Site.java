@@ -1,7 +1,9 @@
 package searchengine.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "site")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Site {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

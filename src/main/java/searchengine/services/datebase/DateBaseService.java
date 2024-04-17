@@ -33,7 +33,7 @@ public class DateBaseService {
             pageDto.setPath(path);
             pageDto.setCode(code);
             pageDto.setContent(content);
-            pageDto.setSite(siteMapper.siteDtoToSite(siteDto));
+            pageDto.setSiteDto(siteDto);
             pageRepository.saveAndFlush(pageMapper.pageDtoToPage(pageDto));
         } catch (Exception e) {
             e.printStackTrace();

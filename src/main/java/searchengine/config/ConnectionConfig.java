@@ -1,14 +1,13 @@
 package searchengine.config;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 
-@Data
+@Getter
+@Setter
 @Configuration
-@RequiredArgsConstructor
 @ConfigurationProperties(prefix = "connection-config")
 public class ConnectionConfig {
     private String userAgent;

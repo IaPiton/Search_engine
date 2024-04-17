@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
+import searchengine.dto.page.PageDto;
 import searchengine.dto.site.SiteDto;
 import searchengine.entity.Page;
 import searchengine.entity.Site;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-13T12:31:16+0300",
+    date = "2024-04-17T14:09:11+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.10 (Amazon.com Inc.)"
 )
 @Component
@@ -32,10 +33,7 @@ public class SiteMapperImpl implements SiteMapper {
         site.setLastError( siteDto.getLastError() );
         site.setUrl( siteDto.getUrl() );
         site.setName( siteDto.getName() );
-        Set<Page> set = siteDto.getPages();
-        if ( set != null ) {
-            site.setPages( new ArrayList<Page>( set ) );
-        }
+        site.setPages( pageDtoSetToPageList( siteDto.getPages() ) );
 
         site.setStatusTime( LocalDateTime.now() );
 
@@ -56,11 +54,64 @@ public class SiteMapperImpl implements SiteMapper {
         siteDto.setLastError( site.getLastError() );
         siteDto.setUrl( site.getUrl() );
         siteDto.setName( site.getName() );
-        List<Page> list = site.getPages();
-        if ( list != null ) {
-            siteDto.setPages( new LinkedHashSet<Page>( list ) );
-        }
+        siteDto.setPages( pageListToPageDtoSet( site.getPages() ) );
 
         return siteDto;
+    }
+
+    protected Page pageDtoToPage(PageDto pageDto) {
+        if ( pageDto == null ) {
+            return null;
+        }
+
+        Page page = new Page();
+
+        page.setId( pageDto.getId() );
+        page.setPath( pageDto.getPath() );
+        page.setCode( pageDto.getCode() );
+        page.setContent( pageDto.getContent() );
+
+        return page;
+    }
+
+    protected List<Page> pageDtoSetToPageList(Set<PageDto> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        List<Page> list = new ArrayList<Page>( set.size() );
+        for ( PageDto pageDto : set ) {
+            list.add( pageDtoToPage( pageDto ) );
+        }
+
+        return list;
+    }
+
+    protected PageDto pageToPageDto(Page page) {
+        if ( page == null ) {
+            return null;
+        }
+
+        PageDto pageDto = new PageDto();
+
+        pageDto.setId( page.getId() );
+        pageDto.setPath( page.getPath() );
+        pageDto.setCode( page.getCode() );
+        pageDto.setContent( page.getContent() );
+
+        return pageDto;
+    }
+
+    protected Set<PageDto> pageListToPageDtoSet(List<Page> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        Set<PageDto> set = new LinkedHashSet<PageDto>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
+        for ( Page page : list ) {
+            set.add( pageToPageDto( page ) );
+        }
+
+        return set;
     }
 }
