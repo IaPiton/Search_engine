@@ -1,8 +1,11 @@
 package searchengine.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ResponseDto {
     private Boolean result;
     private String error;

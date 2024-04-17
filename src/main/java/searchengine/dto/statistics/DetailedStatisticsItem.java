@@ -2,11 +2,14 @@ package searchengine.dto.statistics;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import searchengine.entity.Status;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class DetailedStatisticsItem {
     private String url;

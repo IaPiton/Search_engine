@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class PageDtoTest {
 
     @Test
-    public void getPageTest() {
+    public void getPageDtoTest() {
         PageDto pageDto = new PageDto(1, "testPath", 1, "testContent", new SiteDto());
         assertEquals(Integer.valueOf(1), pageDto.getId());
         assertEquals("testPath", pageDto.getPath());
@@ -20,7 +20,7 @@ public class PageDtoTest {
     }
 
     @Test
-    public void setPageTest() {
+    public void setPageDtoTest() {
         PageDto pageDto= new PageDto();
         pageDto.setId(1);
         pageDto.setPath("testPath");

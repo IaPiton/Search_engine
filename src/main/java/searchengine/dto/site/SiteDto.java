@@ -1,8 +1,6 @@
 package searchengine.dto.site;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import searchengine.dto.page.PageDto;
 import searchengine.entity.Page;
 import searchengine.entity.Status;
@@ -12,9 +10,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class SiteDto {
     private Integer id;
     private Status status;
