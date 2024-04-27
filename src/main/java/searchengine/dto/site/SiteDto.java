@@ -12,8 +12,8 @@ import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
+@ToString
 public class SiteDto {
     private Integer id;
     private Status status;

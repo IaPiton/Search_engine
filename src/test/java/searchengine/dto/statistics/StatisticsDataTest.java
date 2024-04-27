@@ -1,6 +1,8 @@
 package searchengine.dto.statistics;
 
-import org.testng.annotations.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 

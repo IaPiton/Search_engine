@@ -11,12 +11,8 @@ import java.net.SocketException;
 
 @Component
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Connection {
-
-   private String url;
-   private ConnectionConfig connectionConfig;
     @Getter
     private static int code;
     public static Document getDocument(String url, ConnectionConfig connectionConfig) {
@@ -28,10 +24,7 @@ public class Connection {
                     .referrer(connectionConfig.getReferer())
                     .get();
             code = document.connection().response().statusCode();
-        } catch (SocketException e) {
-            code = 500;
-        } catch (IOException |
-                 RuntimeException e) {
+        } catch (Exception e) {
             code = 404;
         }
         return document;

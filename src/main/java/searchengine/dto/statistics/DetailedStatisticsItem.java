@@ -1,16 +1,13 @@
 package searchengine.dto.statistics;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import searchengine.entity.Status;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DetailedStatisticsItem {
     private String url;
     private String name;
@@ -19,4 +16,6 @@ public class DetailedStatisticsItem {
     private String error;
     private Integer pages;
     private Integer lemmas;
+
+
 }

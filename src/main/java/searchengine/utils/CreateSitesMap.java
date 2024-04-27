@@ -2,6 +2,7 @@ package searchengine.utils;
 
 import lombok.NoArgsConstructor;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
@@ -15,6 +16,7 @@ import searchengine.services.datebase.DateBaseService;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ public class CreateSitesMap extends RecursiveAction {
         try {
             if (StartAndStop.getStart()) {
                 Document document = Connection.getDocument(url, connectionConfig);
-                dateBaseService.createPage(url, Connection.getCode(), checkContent(document), siteDto);
+                dateBaseService.createPage(url, Connection.getCode(), checkContent(document));
                 Elements elements = document.select("a");
                 List<CreateSitesMap> taskList = new ArrayList<>();
                 for (Element element : elements) {
@@ -67,13 +69,17 @@ public class CreateSitesMap extends RecursiveAction {
                     task.join();
                 }
             }
-        } catch (NullPointerException e){
-            dateBaseService.createPage(url, Connection.getCode(), " ", siteDto);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+            try {
+                dateBaseService.createPage(url, 404, " ");
+            } catch (MalformedURLException ex) {
+                throw new RuntimeException(ex);
+            }
+            dateBaseService.updateErrorSite(siteDto, "Page not found ");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
-
 
 
     private String checkContent(Document document) {
@@ -97,6 +103,12 @@ public class CreateSitesMap extends RecursiveAction {
                 || link.contains(".pptx")
                 || link.contains(".docx")
                 || link.contains("?_ga");
+    }
+
+    @SneakyThrows
+    public void indexPage(String urlReplace, DateBaseService dateBaseService, ConnectionConfig connectionConfig) {
+        Document document = Connection.getDocument(urlReplace, connectionConfig);
+        dateBaseService.createPage(urlReplace, Connection.getCode(), checkContent(document));
     }
 }
 

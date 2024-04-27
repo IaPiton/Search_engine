@@ -14,4 +14,6 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
 
 
     Site findByName(String name);
+
+    Site findByUrl(String host);
 }

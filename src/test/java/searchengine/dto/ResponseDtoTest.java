@@ -1,6 +1,6 @@
 package searchengine.dto;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 import searchengine.dto.ResponseDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

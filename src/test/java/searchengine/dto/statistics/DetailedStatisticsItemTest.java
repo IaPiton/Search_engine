@@ -1,23 +1,33 @@
 package searchengine.dto.statistics;
 
-import org.testng.annotations.Test;
+
+import org.junit.jupiter.api.Test;
 import searchengine.entity.Status;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DetailedStatisticsItemTest {
 
     @Test
     public void getDetailedStatisticsItemTest() {
-        DetailedStatisticsItem detailedStatisticsItem = new DetailedStatisticsItem("url", "name", Status.INDEXING, LocalDateTime.of(2020, 1, 1, 0, 0), "error", 1, 0);
-        assertEquals("url", detailedStatisticsItem.getUrl());
-        assertEquals("name", detailedStatisticsItem.getName());
-        assertEquals(Status.INDEXING, detailedStatisticsItem.getStatus());
-        assertEquals(LocalDateTime.of(2020, 1, 1, 0, 0), detailedStatisticsItem.getStatusTime());
-        assertEquals("error", detailedStatisticsItem.getError());
-        assertEquals(1, detailedStatisticsItem.getPages());
-        assertEquals(0, detailedStatisticsItem.getLemmas());
+        DetailedStatisticsItem detailedStatisticsItem = new DetailedStatisticsItem();
+        detailedStatisticsItem.setName("name");
+        detailedStatisticsItem.setStatus(Status.INDEXING);
+        detailedStatisticsItem.setUrl("url");
+        detailedStatisticsItem.setStatusTime(LocalDateTime.of(2022, 1, 1, 1, 1, 1));
+        detailedStatisticsItem.setError("error");
+        detailedStatisticsItem.setPages(1);
+        detailedStatisticsItem.setLemmas(1);
+        assertThat("error", equalTo(detailedStatisticsItem.getError()));
+        assertThat(1, equalTo(detailedStatisticsItem.getPages()));
+        assertThat(1, equalTo(detailedStatisticsItem.getLemmas()));
+        assertThat(LocalDateTime.of(2022, 1, 1, 1, 1, 1), equalTo(detailedStatisticsItem.getStatusTime()));
+        assertThat("url", equalTo(detailedStatisticsItem.getUrl()));
+        assertThat("name", equalTo(detailedStatisticsItem.getName()));
+        assertThat(Status.INDEXING, equalTo(detailedStatisticsItem.getStatus()));
     }
 }

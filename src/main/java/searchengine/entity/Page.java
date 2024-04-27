@@ -2,20 +2,24 @@ package searchengine.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "Page")
+@RequiredArgsConstructor
 public class Page {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @PrimaryKeyJoinColumn
     @Column(name = "path", columnDefinition = "TEXT", nullable = false)
     private String path;
 
@@ -28,8 +32,5 @@ public class Page {
     @ManyToOne
     @JoinColumn(name = "site_id")
     private Site site;
-
-
-
 
 }

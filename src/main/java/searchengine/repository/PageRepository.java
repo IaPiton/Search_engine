@@ -31,4 +31,11 @@ public interface PageRepository extends JpaRepository<Page, Long> {
     @Modifying
     @Query(value = "DELETE FROM Page", nativeQuery = true)
     void deleteAllPages();
+
+    Integer countByCode(int i);
+
+    boolean existsByPath(String urlReplace);
+
+
+    void deleteByPath(String path);
 }

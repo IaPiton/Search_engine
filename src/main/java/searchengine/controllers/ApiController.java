@@ -3,14 +3,16 @@ package searchengine.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.services.indexing.IndexingService;
 import searchengine.services.indexing.IndexingServiceImpl;
 import searchengine.services.statistics.StatisticsService;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
 @Log4j2
 @RestController
 @RequestMapping("/api")
@@ -35,6 +37,12 @@ public class ApiController {
     public ResponseEntity<ResponseDto> stopIndexing() {
         log.info("ApiController.stopIndexing() - start");
         ResponseDto responseDto = indexingService.stopIndexing();
+        return ResponseEntity.ok(responseDto);
+    }
+    @PostMapping("/indexPage")
+    public ResponseEntity<ResponseDto> indexPage(@RequestBody String url) throws URISyntaxException, MalformedURLException {
+        log.info("ApiController.stopIndexing() - start");
+        ResponseDto responseDto = indexingService.indexPage(url);
         return ResponseEntity.ok(responseDto);
     }
 
