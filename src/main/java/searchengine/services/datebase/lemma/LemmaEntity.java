@@ -17,14 +17,8 @@ public interface LemmaEntity {
 
     public Lemma findById(Integer id);
 
+    public List<Lemma> findLemmaByPageId(Page page);
 
 
-
-
-
-
-
-
-
-
+    void deleteLemmaByPage(List<Lemma> lemmaByPage);
 }

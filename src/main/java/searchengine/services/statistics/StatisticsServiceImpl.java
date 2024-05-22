@@ -7,13 +7,11 @@ import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.dto.statistics.StatisticsData;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.dto.statistics.TotalStatistics;
-import searchengine.entity.Status;
-import searchengine.repository.PageRepository;
-import searchengine.repository.SiteRepository;
+
 import searchengine.services.datebase.DateBaseService;
 
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 

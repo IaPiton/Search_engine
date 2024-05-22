@@ -9,40 +9,41 @@ import searchengine.repository.PageRepository;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
 @Component
 
 @RequiredArgsConstructor
 public class PageEntityImpl implements PageEntity {
     private final PageRepository pageRepository;
+
     @Override
     public void deletePageByPath(String urlReplace) {
-        String path = null;
+        String path;
         try {
             path = createPath(urlReplace);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
         if (existsByPath(path)) {
-           deleteByPath(path);
+            deleteByPath(path);
         }
     }
 
     @Override
-
+    @Transactional(readOnly = true)
     public Long countPage() {
         return pageRepository.count();
     }
 
     @Override
-
+    @Transactional(readOnly = true)
     public Integer countPageBySiteId(Integer siteId) {
         return pageRepository.countBySiteId(siteId);
     }
 
     @Override
-
-    public Page createPage(Site site, String url,Integer code, String content) {
-        String path = null;
+    public Page createPage(Site site, String url, Integer code, String content) {
+        String path;
         Page page = new Page();
         try {
             path = createPath(url);
@@ -59,28 +60,38 @@ public class PageEntityImpl implements PageEntity {
         return pageByPath(path, site);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page findPageByUrl(String urlReplace) {
+        String path;
+        try {
+            path = createPath(urlReplace);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        if (existsByPath(path)) {
+            return pageRepository.findByPath(path);
+        }
+        return null;
+    }
 
 
-
-
-
-
+    @Transactional(readOnly = true)
     public boolean existsByPath(String path) {
         return pageRepository.existsByPath(path);
     }
 
-
-
+    @Transactional
     public void deleteByPath(String path) {
-        pageRepository.deleteByPath(path);
+        pageRepository.delete(pageRepository.findByPath(path));
     }
 
-
+    @Transactional
     public Page savePage(Page page) {
         return pageRepository.saveAndFlush(page);
     }
 
-
+    @Transactional(readOnly = true)
     public Page pageByPath(String path, Site site) {
         return pageRepository.findByPathAndSite(path, site);
     }

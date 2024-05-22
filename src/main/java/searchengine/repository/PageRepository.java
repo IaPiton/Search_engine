@@ -18,31 +18,13 @@ import java.util.List;
 public interface PageRepository extends JpaRepository<Page, Long> {
 
     boolean existsByPath(String url);
-    @Modifying
-    @Query(value = "DELETE FROM Page p WHERE p.path = :path", nativeQuery = true)
-    void deleteByPath(String path);
+   
 
     Integer countBySiteId(Integer id);
 
     Page findByPathAndSite(String path, Site site);
 
-
-//    @Query("select p.id from Page p")
-//    List<Long> findIds();
+    Page findByPath(String path);
 
 
-//    @Modifying
-//    @Query("delete from Page p where p.id in ?1")
-//    void deletePage(@Param("id") List<Long> ids);
-//
-//    @Modifying
-//    @Query(value = "DELETE FROM Page", nativeQuery = true)
-//    void deleteAllPages();
-//
-//    Integer countByCode(int i);
-//
-//
-//
-//
-//    ;
 }

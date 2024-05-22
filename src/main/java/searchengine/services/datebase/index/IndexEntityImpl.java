@@ -8,10 +8,11 @@ import searchengine.entity.Lemma;
 import searchengine.entity.Page;
 import searchengine.entity.Site;
 import searchengine.repository.IndexesRepository;
-import searchengine.services.datebase.DateBaseService;
 import searchengine.services.datebase.lemma.LemmaEntity;
 
+import java.util.List;
 import java.util.Map;
+
 @Component
 
 @RequiredArgsConstructor
@@ -27,7 +28,18 @@ public class IndexEntityImpl implements IndexEntity {
             index.setPage(page);
             index.setLemma(lemmaEntity.findById(lemmaIndex));
             index.setRank(indexes.get(lemmaIndex));
-            indexesRepository.saveAndFlush(index);
+            saveIndex(index);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteIndexesByLemma(List<Lemma> lemmaByPage) {
+        lemmaByPage.stream().map(Lemma::getId).forEach(indexesRepository::deleteByLemmaId);
+    }
+
+    @Transactional
+    public void saveIndex(Indexes index) {
+        indexesRepository.saveAndFlush(index);
     }
 }

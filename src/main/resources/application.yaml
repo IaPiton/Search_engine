@@ -2,7 +2,7 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
       format_sql: true
@@ -26,7 +26,9 @@ indexing-settings:
     - url: https://skillbox.ru
       name: skillbox.ru
     - url: https://playback.ru
-      name: playback.ru
+      name: Playback.ru
+#    - url: https://downsite.ru
+#      name: Downsite
 
 connection-config:
   userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (HTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36

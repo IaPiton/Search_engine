@@ -20,5 +20,5 @@ public interface SiteEntity {
     public Site getSiteByUrl(String url) throws MalformedURLException;
     public void deleteAllSite();
 
-    public Site getSiteByName(String name);
+
 }

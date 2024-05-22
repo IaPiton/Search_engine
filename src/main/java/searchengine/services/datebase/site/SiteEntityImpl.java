@@ -22,6 +22,7 @@ public class SiteEntityImpl implements SiteEntity {
     private final PageMapper pageMapper;
 
     @Override
+    @Transactional
     public Site createSite(SiteDto siteDto, Status status, String error) {
         siteDto.setStatus(status);
         siteDto.setLastError(error);
@@ -29,7 +30,7 @@ public class SiteEntityImpl implements SiteEntity {
     }
 
     @Override
-
+    @Transactional
     public void updateStatusAndErrorSite(Site site, Status status, String error) {
         site.setStatus(status);
         site.setLastError(error);
@@ -37,38 +38,39 @@ public class SiteEntityImpl implements SiteEntity {
     }
 
     @Override
+    @Transactional(readOnly = true)
      public Integer countSitesByStatus(Status status) {
         return siteRepository.countByStatus(status);
     }
 
 
     @Override
+    @Transactional(readOnly = true)
     public Long countSite() {
         return siteRepository.count();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Iterable<Site> getAllSites() {
         return siteRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
      public Site getSiteByUrl(String url)  {
         return siteRepository.findByUrl(getUrl(url));
     }
 
     @Override
+    @Transactional
     public void deleteAllSite() {
         siteRepository.deleteAll();
     }
 
-    @Override
-    public Site getSiteByName(String name) {
-        return null;
-    }
 
     private String getUrl(String url) {
-        URL urlPath = null;
+        URL urlPath;
         try {
             urlPath = new URL(url);
         } catch (MalformedURLException e) {

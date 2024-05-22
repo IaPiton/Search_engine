@@ -1,13 +1,12 @@
 package searchengine.utils;
 
 import lombok.*;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 import searchengine.config.ConnectionConfig;
 
-import java.io.IOException;
-import java.net.SocketException;
 
 @Component
 @Getter
@@ -19,18 +18,17 @@ public class Connection {
         Document document = null;
         try {
             code = 0;
-            Thread.sleep(600);
-            org.jsoup.Connection connection  = Jsoup.connect(url)
+            Thread.sleep(2600);
+            document  = Jsoup.connect(url)
                     .userAgent(connectionConfig.getUserAgent())
                     .referrer(connectionConfig.getReferer())
                     .timeout(10000)
-                    .ignoreContentType(true);
-
-            document = connection.get();
+                    .ignoreContentType(true).get();
             code = document.connection().response().statusCode();
         } catch (Exception e) {
             code = 404;
         }
+
         return document;
     }
 

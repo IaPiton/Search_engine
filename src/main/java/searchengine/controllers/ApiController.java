@@ -39,7 +39,7 @@ public class ApiController {
     }
     @PostMapping("/indexPage")
     public ResponseEntity<ResponseDto> indexPage(@RequestBody String url) throws URISyntaxException, MalformedURLException {
-        log.info("ApiController.stopIndexing() - start");
+        log.info("ApiController.indexPage() - start");
         ResponseDto responseDto = indexingService.indexPage(url);
         return ResponseEntity.ok(responseDto);
     }

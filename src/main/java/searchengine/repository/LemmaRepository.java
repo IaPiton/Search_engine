@@ -1,15 +1,16 @@
 package searchengine.repository;
 
-import org.hibernate.query.spi.Limit;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
 import searchengine.entity.Lemma;
+import searchengine.entity.Page;
 import searchengine.entity.Site;
 
-import javax.net.ssl.SSLSession;
+
 import java.util.List;
 
 
@@ -18,30 +19,16 @@ public interface LemmaRepository extends JpaRepository<Lemma, Long> {
 
     Integer countBySiteId(Integer siteId);
 
-
-
-
-
-
-
-
-
-
-
-
-
+    Lemma findById(Integer id);
 
     boolean existsByLemmaAndSite(String lemmas, Site site);
 
 
     Lemma findFirstByLemmaAndSite(String lemma, Site site);
 
+    @Query(value = "select l from Lemma l join Indexes i on l.id = i.lemma.id where i.page in :page")
+    List<Lemma> findLemmaByPageId(Page page);
 
-//    @Modifying(flushAutomatically = true)
-//    @Query(value = " update lemma set frequency=?,lemma=?,site_id=? where id=?", nativeQuery = true)
-//    void updateLemma(Integer frequency, String lemma, Integer siteId, Integer id);
-//
-//    @Modifying(flushAutomatically = true)
-//    @Query(value = "insert into lemma (lemma, frequency, site_id) values (?1, ?2, ?3)", nativeQuery = true)
-//    void insertLemma(String lemma, Integer frequency, Integer siteId);
+
+
 }

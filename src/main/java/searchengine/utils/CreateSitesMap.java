@@ -4,22 +4,17 @@ import lombok.NoArgsConstructor;
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 import searchengine.config.ConnectionConfig;
 import searchengine.config.StartAndStop;
-import searchengine.dto.site.SiteDto;
 import org.jsoup.nodes.Document;
 import searchengine.entity.Site;
 import searchengine.entity.Status;
 import searchengine.services.datebase.DateBaseService;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.net.MalformedURLException;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -36,7 +31,6 @@ public class CreateSitesMap extends RecursiveAction {
     private DateBaseService dateBaseService;
     private ConnectionConfig connectionConfig;
 
-    private Integer code;
 
     public CreateSitesMap(Site site, CopyOnWriteArraySet<String> sitesMap, String url, DateBaseService dateBaseService, ConnectionConfig connectionConfig) {
         this.site = site;
@@ -74,16 +68,15 @@ public class CreateSitesMap extends RecursiveAction {
         } catch (NullPointerException e) {
             try {
                 dateBaseService.createPage(url, 404, " ");
+                getPool().shutdown();
             } catch (MalformedURLException ex) {
                 throw new RuntimeException(ex);
             }
             dateBaseService.updateStatusAndErrorSite(site, Status.INDEXING, "Page not found ");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-
+        }catch (Exception e) {
+            log.error(e);
         }
     }
 

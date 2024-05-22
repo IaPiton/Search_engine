@@ -9,16 +9,13 @@ import searchengine.config.StartAndStop;
 import searchengine.config.SitesList;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.site.SiteDto;
+import searchengine.entity.Lemma;
 import searchengine.entity.Site;
 import searchengine.entity.Status;
 
 import searchengine.services.datebase.DateBaseService;
 import searchengine.utils.CreateSitesMap;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -48,7 +45,7 @@ public class IndexingServiceImpl implements IndexingService {
     public void createThreadForIndexingSite(SiteDto siteDto) {
         Site site = dateBaseService.createSite(siteDto, Status.INDEXING, "Ошибок нет");
         CopyOnWriteArraySet<String> sitesMap = new CopyOnWriteArraySet<>();
-        ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        ForkJoinPool pool = new ForkJoinPool();
         CreateSitesMap createSitesMap = new CreateSitesMap(site, sitesMap, site.getUrl(), dateBaseService, connectionConfig);
         pool.invoke(createSitesMap);
         finishedIndexing(site);
@@ -77,20 +74,26 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public ResponseDto indexPage(String url) throws MalformedURLException {
-        String urlReplace = url.toLowerCase().replace("url=", "").replace("%3A", ":").replace("%2F", "/");
+    public ResponseDto indexPage(String url)  {
+        String urlReplace = url.toLowerCase().replace("url=", "").replace("%3a", ":").replace("%2f", "/");
         if (StartAndStop.getStart()) {
             return new ResponseDto(false, "Выполняется индексация");
         }
-        if (!sites.getSites().stream().anyMatch(site -> urlReplace.contains(site.getUrl()))) {
+        if (sites.getSites().stream().noneMatch(site -> urlReplace.contains(site.getUrl()))) {
             return new ResponseDto(false, "Эта страница находится за пределами сайтов\n" +
                     ", указанных в файле конфигурации");
         }
-        dateBaseService.deletePageByPath(urlReplace);
+        deletePage(urlReplace);
         CreateSitesMap createSitesMap = new CreateSitesMap();
         createSitesMap.indexPage(urlReplace, dateBaseService, connectionConfig);
-
         return new ResponseDto(true);
+    }
+
+    private void deletePage(String urlReplace) {
+        List<Lemma> lemmaByPage = dateBaseService.findLemmaByPageId(dateBaseService.findPageByUrl(urlReplace));
+        dateBaseService.deleteIndexesByLemma(lemmaByPage);
+        dateBaseService.deleteLemmaByPage(lemmaByPage);
+        dateBaseService.deletePageByPath(urlReplace);
     }
 
 }

@@ -29,6 +29,6 @@ public class Lemma {
     private String lemma;
     @Column(name = "frequency", nullable = false)
     private Integer frequency;
-    @OneToMany(mappedBy = "lemma")
+    @OneToMany(mappedBy = "lemma", fetch = FetchType.LAZY)
     private List<Indexes> indexes;
 }

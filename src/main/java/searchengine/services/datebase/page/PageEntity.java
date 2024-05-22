@@ -15,9 +15,5 @@ public interface PageEntity {
 
     public Page createPage(Site site, String url, Integer code, String content);
 
-
-
-
-
-
+    Page findPageByUrl(String urlReplace);
 }

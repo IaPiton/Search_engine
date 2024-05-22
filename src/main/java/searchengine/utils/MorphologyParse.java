@@ -1,7 +1,6 @@
 package searchengine.utils;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+
 import lombok.extern.log4j.Log4j2;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.WrongCharaterException;
