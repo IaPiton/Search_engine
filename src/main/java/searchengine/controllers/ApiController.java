@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.statistics.StatisticsResponse;
 import searchengine.services.indexing.IndexingService;
-import searchengine.services.indexing.IndexingServiceImpl;
 import searchengine.services.statistics.StatisticsService;
 
 import java.net.MalformedURLException;
@@ -36,8 +35,7 @@ public class ApiController {
     @GetMapping("/stopIndexing")
     public ResponseEntity<ResponseDto> stopIndexing() {
         log.info("ApiController.stopIndexing() - start");
-        ResponseDto responseDto = indexingService.stopIndexing();
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(indexingService.stopIndexing());
     }
     @PostMapping("/indexPage")
     public ResponseEntity<ResponseDto> indexPage(@RequestBody String url) throws URISyntaxException, MalformedURLException {

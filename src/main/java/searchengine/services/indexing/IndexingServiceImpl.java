@@ -9,6 +9,7 @@ import searchengine.config.StartAndStop;
 import searchengine.config.SitesList;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.site.SiteDto;
+import searchengine.entity.Site;
 import searchengine.entity.Status;
 
 import searchengine.services.datebase.DateBaseService;
@@ -32,7 +33,7 @@ public class IndexingServiceImpl implements IndexingService {
     @Override
     public ResponseDto startIndexing() {
         if (StartAndStop.getStart()) {
-            return new ResponseDto(false, "Indexing is already running");
+            return new ResponseDto(true, "Индексация уже запущена");
         }
         StartAndStop.setStart(true);
         dateBaseService.deleterAll();
@@ -45,24 +46,21 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Async
     public void createThreadForIndexingSite(SiteDto siteDto) {
-        siteDto = dateBaseService.createSite(siteDto, Status.INDEXING, "There are no errors");
+        Site site = dateBaseService.createSite(siteDto, Status.INDEXING, "Ошибок нет");
         CopyOnWriteArraySet<String> sitesMap = new CopyOnWriteArraySet<>();
-        ForkJoinPool pool = new ForkJoinPool();
-        CreateSitesMap createSitesMap = new CreateSitesMap(siteDto, sitesMap, siteDto.getUrl(), dateBaseService, connectionConfig);
+        ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        CreateSitesMap createSitesMap = new CreateSitesMap(site, sitesMap, site.getUrl(), dateBaseService, connectionConfig);
         pool.invoke(createSitesMap);
-        finishedIndexing(siteDto);
+        finishedIndexing(site);
     }
 
-    public void finishedIndexing(SiteDto siteDto) {
+    public void finishedIndexing(Site site) {
         if (StartAndStop.getStart()) {
-            log.info("?????????? ????? " + siteDto.getUrl() + "  ????????? ??? ??????");
-            dateBaseService.updateStatusSite(siteDto, Status.INDEXED);
-            dateBaseService.updateErrorSite(siteDto, "?????????? ????????? ??? ??????");
-
+            log.info("Индексация сайта " + site.getUrl() + "  окончена без ошибок");
+            dateBaseService.updateStatusAndErrorSite(site, Status.INDEXED, "При индексации сайта ошибок не произошло");
         } else {
-            log.info("?????????? ????? " + siteDto.getUrl() + " ???????????");
-            dateBaseService.updateStatusSite(siteDto, Status.FAILED);
-            dateBaseService.updateErrorSite(siteDto, "Indexing stop");
+            log.info("Индексация сайта " + site.getUrl() + " остановлена");
+            dateBaseService.updateStatusAndErrorSite(site, Status.FAILED, "Индексация остановлена");
         }
         if (dateBaseService.countSitesByStatus(Status.INDEXING) == 0) {
             StartAndStop.setStart(false);
@@ -72,7 +70,7 @@ public class IndexingServiceImpl implements IndexingService {
     @Override
     public ResponseDto stopIndexing() {
         if (!StartAndStop.getStart()) {
-            return new ResponseDto(false, "Indexing is not running");
+            return new ResponseDto(false, "Индексация не выполняется");
         }
         StartAndStop.setStart(false);
         return new ResponseDto(true);
@@ -81,14 +79,14 @@ public class IndexingServiceImpl implements IndexingService {
     @Override
     public ResponseDto indexPage(String url) throws MalformedURLException {
         String urlReplace = url.toLowerCase().replace("url=", "").replace("%3A", ":").replace("%2F", "/");
-        if(StartAndStop.getStart()){
-            return new ResponseDto(false, "Indexing is running");
+        if (StartAndStop.getStart()) {
+            return new ResponseDto(false, "Выполняется индексация");
         }
         if (!sites.getSites().stream().anyMatch(site -> urlReplace.contains(site.getUrl()))) {
-            return new ResponseDto(false, "This page is located outside the sites\n" +
-                    "specified in the configuration file");
+            return new ResponseDto(false, "Эта страница находится за пределами сайтов\n" +
+                    ", указанных в файле конфигурации");
         }
-        dateBaseService.deletePage(urlReplace);
+        dateBaseService.deletePageByPath(urlReplace);
         CreateSitesMap createSitesMap = new CreateSitesMap();
         createSitesMap.indexPage(urlReplace, dateBaseService, connectionConfig);
 

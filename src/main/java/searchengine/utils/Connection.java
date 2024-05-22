@@ -19,10 +19,14 @@ public class Connection {
         Document document = null;
         try {
             code = 0;
-            document = Jsoup.connect(url)
+            Thread.sleep(600);
+            org.jsoup.Connection connection  = Jsoup.connect(url)
                     .userAgent(connectionConfig.getUserAgent())
                     .referrer(connectionConfig.getReferer())
-                    .get();
+                    .timeout(10000)
+                    .ignoreContentType(true);
+
+            document = connection.get();
             code = document.connection().response().statusCode();
         } catch (Exception e) {
             code = 404;

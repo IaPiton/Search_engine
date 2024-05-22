@@ -12,6 +12,8 @@ import searchengine.config.ConnectionConfig;
 import searchengine.config.StartAndStop;
 import searchengine.dto.site.SiteDto;
 import org.jsoup.nodes.Document;
+import searchengine.entity.Site;
+import searchengine.entity.Status;
 import searchengine.services.datebase.DateBaseService;
 
 import java.io.IOException;
@@ -28,7 +30,7 @@ import java.util.concurrent.RecursiveAction;
 @NoArgsConstructor
 public class CreateSitesMap extends RecursiveAction {
 
-    private SiteDto siteDto;
+    private Site site;
     private CopyOnWriteArraySet<String> sitesMap = new CopyOnWriteArraySet<>();
     private String url;
     private DateBaseService dateBaseService;
@@ -36,8 +38,8 @@ public class CreateSitesMap extends RecursiveAction {
 
     private Integer code;
 
-    public CreateSitesMap(SiteDto siteDto, CopyOnWriteArraySet<String> sitesMap, String url, DateBaseService dateBaseService, ConnectionConfig connectionConfig) {
-        this.siteDto = siteDto;
+    public CreateSitesMap(Site site, CopyOnWriteArraySet<String> sitesMap, String url, DateBaseService dateBaseService, ConnectionConfig connectionConfig) {
+        this.site = site;
         this.sitesMap = sitesMap;
         this.url = url;
         this.dateBaseService = dateBaseService;
@@ -53,13 +55,13 @@ public class CreateSitesMap extends RecursiveAction {
                 Elements elements = document.select("a");
                 List<CreateSitesMap> taskList = new ArrayList<>();
                 for (Element element : elements) {
-                    String url = siteDto.getUrl();
+                    String url = site.getUrl();
                     String href = element.absUrl("href");
                     if (href.contains(url)
                             && !href.contains("#")
                             && !isFile(href)
                             && !sitesMap.contains(href)) {
-                        CreateSitesMap task = new CreateSitesMap(siteDto, sitesMap, href, dateBaseService, connectionConfig);
+                        CreateSitesMap task = new CreateSitesMap(site, sitesMap, href, dateBaseService, connectionConfig);
                         task.fork();
                         taskList.add(task);
                         sitesMap.add(href);
@@ -75,9 +77,13 @@ public class CreateSitesMap extends RecursiveAction {
             } catch (MalformedURLException ex) {
                 throw new RuntimeException(ex);
             }
-            dateBaseService.updateErrorSite(siteDto, "Page not found ");
+            dateBaseService.updateStatusAndErrorSite(site, Status.INDEXING, "Page not found ");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+
         }
     }
 

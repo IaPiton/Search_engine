@@ -31,7 +31,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
 
         TotalStatistics total = new TotalStatistics(dateBaseService.countSite(), dateBaseService.countPage(),
-                dateBaseService.countPage(), true);
+                dateBaseService.countLemma(), true);
 
         List<DetailedStatisticsItem> detailedList = new ArrayList<>();
         dateBaseService.getAllSites().forEach(site -> {
@@ -42,7 +42,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             detailed.setStatusTime(site.getStatusTime());
             detailed.setError(site.getLastError());
             detailed.setPages(dateBaseService.countPageBySiteId(site.getId()));
-            detailed.setLemmas(dateBaseService.countPageBySiteId(site.getId()));
+            detailed.setLemmas(dateBaseService.countLemmaBySiteId(site.getId()));
             detailedList.add(detailed);
         });
         StatisticsData statisticsOut = new StatisticsData(total, detailedList) {

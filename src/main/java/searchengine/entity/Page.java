@@ -8,11 +8,14 @@ import lombok.Setter;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Page")
+@Table(name = "page")
 @RequiredArgsConstructor
 public class Page {
 
@@ -32,5 +35,8 @@ public class Page {
     @ManyToOne
     @JoinColumn(name = "site_id")
     private Site site;
+
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Indexes> indexes = new ArrayList<>();
 
 }

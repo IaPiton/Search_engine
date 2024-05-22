@@ -15,4 +15,6 @@ public interface PageMapper extends SiteMapper {
 
     @Mapping(target = "site", expression = "java(siteDtoToSite(pageDto.getSiteDto()))")
     Page pageDtoToPage(PageDto pageDto);
+
+    PageDto pageToPageDto(Page page);
 }

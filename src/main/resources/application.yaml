@@ -1,13 +1,11 @@
 spring:
-
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+      format_sql: true
     open-in-view: false
 
   datasource:
@@ -15,16 +13,24 @@ spring:
     username: search-engine
     password: search-engine
     driverClassName: org.postgresql.Driver
+    hikari:
+      maximumPoolSize: 100
+      connectionTimeout: 100000
+      maxLifetime: 120000
+      minimumIdle: 100
 
 indexing-settings:
   sites:
 #    - url: https://lenta.ru
 #      name: Лента.ру
-#    - url: https://skillbox.ru
-#      name: skillbox.ru
+    - url: https://skillbox.ru
+      name: skillbox.ru
     - url: https://playback.ru
       name: playback.ru
 
 connection-config:
   userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (HTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36
   referer: http://google.ru
+
+
+

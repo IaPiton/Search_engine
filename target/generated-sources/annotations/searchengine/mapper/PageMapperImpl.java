@@ -14,7 +14,7 @@ import searchengine.entity.Site;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-04-27T13:16:08+0300",
+    date = "2024-05-22T09:42:04+0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.10 (Amazon.com Inc.)"
 )
 @Component
@@ -77,20 +77,8 @@ public class PageMapperImpl implements PageMapper {
         return page;
     }
 
-    protected List<Page> pageDtoSetToPageList(Set<PageDto> set) {
-        if ( set == null ) {
-            return null;
-        }
-
-        List<Page> list = new ArrayList<Page>( set.size() );
-        for ( PageDto pageDto : set ) {
-            list.add( pageDtoToPage( pageDto ) );
-        }
-
-        return list;
-    }
-
-    protected PageDto pageToPageDto(Page page) {
+    @Override
+    public PageDto pageToPageDto(Page page) {
         if ( page == null ) {
             return null;
         }
@@ -103,6 +91,19 @@ public class PageMapperImpl implements PageMapper {
         pageDto.setContent( page.getContent() );
 
         return pageDto;
+    }
+
+    protected List<Page> pageDtoSetToPageList(Set<PageDto> set) {
+        if ( set == null ) {
+            return null;
+        }
+
+        List<Page> list = new ArrayList<Page>( set.size() );
+        for ( PageDto pageDto : set ) {
+            list.add( pageDtoToPage( pageDto ) );
+        }
+
+        return list;
     }
 
     protected Set<PageDto> pageListToPageDtoSet(List<Page> list) {

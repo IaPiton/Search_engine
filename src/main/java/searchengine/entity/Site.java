@@ -39,4 +39,9 @@ public class Site {
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 
     private List<Page> pages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "site",
+            fetch = FetchType.LAZY
+    )
+    private Set<Lemma> lemmas = new HashSet<>();
 }
