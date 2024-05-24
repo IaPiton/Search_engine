@@ -23,12 +23,12 @@ indexing-settings:
   sites:
 #    - url: https://lenta.ru
 #      name: Лента.ру
-    - url: https://skillbox.ru
-      name: skillbox.ru
-    - url: https://playback.ru
+#    - url: https://skillbox.ru
+#      name: skillbox.ru
+    - url: https://www.playback.ru
       name: Playback.ru
-#    - url: https://downsite.ru
-#      name: Downsite
+    - url: https://www.svetlovka.ru
+      name: Svetlovka.ru
 
 connection-config:
   userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (HTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36

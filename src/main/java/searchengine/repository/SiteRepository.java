@@ -19,10 +19,10 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
 
     int countByStatus(Status status);
 
-
     Site findByName(String name);
 
-    Site findByUrl(String host);
+    Site findByUrl(String url);
+
 
 
 }

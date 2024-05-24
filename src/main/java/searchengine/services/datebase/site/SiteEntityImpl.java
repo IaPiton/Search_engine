@@ -59,7 +59,9 @@ public class SiteEntityImpl implements SiteEntity {
     @Override
     @Transactional(readOnly = true)
      public Site getSiteByUrl(String url)  {
-        return siteRepository.findByUrl(getUrl(url));
+        url = getUrl(url);
+        Site site = siteRepository.findByUrl(url);
+        return site;
     }
 
     @Override

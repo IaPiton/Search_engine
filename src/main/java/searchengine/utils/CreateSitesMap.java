@@ -44,8 +44,9 @@ public class CreateSitesMap extends RecursiveAction {
     public void compute() {
         try {
             if (StartAndStop.getStart()) {
-                Document document = Connection.getDocument(url, connectionConfig);
-                dateBaseService.createPage(url, Connection.getCode(), checkContent(document));
+                Thread.sleep(1000);
+                Document document = Connections.getDocument(url, connectionConfig);
+                dateBaseService.createPage(url, Connections.getCode(), checkContent(document));
                 Elements elements = document.select("a");
                 List<CreateSitesMap> taskList = new ArrayList<>();
                 for (Element element : elements) {
@@ -66,12 +67,6 @@ public class CreateSitesMap extends RecursiveAction {
                 }
             }
         } catch (NullPointerException e) {
-            try {
-                dateBaseService.createPage(url, 404, " ");
-                getPool().shutdown();
-            } catch (MalformedURLException ex) {
-                throw new RuntimeException(ex);
-            }
             dateBaseService.updateStatusAndErrorSite(site, Status.INDEXING, "Page not found ");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -96,6 +91,8 @@ public class CreateSitesMap extends RecursiveAction {
                 || link.contains(".gif")
                 || link.contains(".webp")
                 || link.contains(".pdf")
+                || link.contains(".PDF")
+                || link.contains(".JPG")
                 || link.contains(".eps")
                 || link.contains(".xlsx")
                 || link.contains(".doc")
@@ -106,8 +103,8 @@ public class CreateSitesMap extends RecursiveAction {
 
     @SneakyThrows
     public void indexPage(String urlReplace, DateBaseService dateBaseService, ConnectionConfig connectionConfig) {
-        Document document = Connection.getDocument(urlReplace, connectionConfig);
-        dateBaseService.createPage(urlReplace, Connection.getCode(), checkContent(document));
+        Document document = Connections.getDocument(urlReplace, connectionConfig);
+        dateBaseService.createPage(urlReplace, Connections.getCode(), checkContent(document));
     }
 }
 

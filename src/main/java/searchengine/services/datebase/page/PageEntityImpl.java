@@ -43,27 +43,33 @@ public class PageEntityImpl implements PageEntity {
 
     @Override
     public Page createPage(Site site, String url, Integer code, String content) {
-        String path;
-        Page page = new Page();
-        try {
-            path = createPath(url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        if (!existsByPath(path)) {
-            page.setPath(path);
-            page.setCode(code);
-            page.setContent(content);
-            page.setSite(site);
-            return savePage(page);
-        }
-        return pageByPath(path, site);
+        String path = null;
+
+           content.replace("\u0000", "");
+
+           Page page = new Page();
+           try {
+               path = createPath(url);
+           } catch (MalformedURLException e) {
+               throw new RuntimeException(e);
+           }
+           if (!pageRepository.existsByPathAndSite(path, site)) {
+               page.setPath(path);
+               page.setCode(code);
+               page.setContent(content);
+               page.setSite(site);
+               return savePage(page);
+           }
+
+
+        page = pageByPath(path, site);
+        return page;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page findPageByUrl(String urlReplace) {
-        String path;
+        String path = null;
         try {
             path = createPath(urlReplace);
         } catch (MalformedURLException e) {
@@ -75,10 +81,15 @@ public class PageEntityImpl implements PageEntity {
         return null;
     }
 
-
     @Transactional(readOnly = true)
     public boolean existsByPath(String path) {
         return pageRepository.existsByPath(path);
+    }
+
+
+    @Transactional(readOnly = true)
+    public boolean existsByPath(String path, Site site) {
+        return pageRepository.existsByPathAndSite(path, site);
     }
 
     @Transactional

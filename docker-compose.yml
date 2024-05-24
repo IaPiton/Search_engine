@@ -3,6 +3,7 @@ services:
   db:
     container_name: search-engine
     image: postgres:16.2
+    command: -c 'max_connections=300'
     restart: always
     environment:
       POSTGRES_USER: search-engine

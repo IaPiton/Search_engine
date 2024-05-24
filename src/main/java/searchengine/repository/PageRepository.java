@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface PageRepository extends JpaRepository<Page, Long> {
 
-    boolean existsByPath(String url);
+    boolean existsByPathAndSite(String url, Site site);
    
 
     Integer countBySiteId(Integer id);
@@ -26,5 +26,5 @@ public interface PageRepository extends JpaRepository<Page, Long> {
 
     Page findByPath(String path);
 
-
+    boolean existsByPath(String path);
 }

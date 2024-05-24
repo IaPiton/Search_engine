@@ -35,12 +35,20 @@ public class DateBaseService {
     private final IndexEntity indexEntity;
 
     public void createPage(String url, Integer code, String content) throws MalformedURLException {
-        Site site = siteEntity.getSiteByUrl(url);
+
+       try {
+           Site site = siteEntity.getSiteByUrl(url);
+
         Page page = pageEntity.createPage(site, url, code, content);
+
         if (page.getCode() == 200) {
             Map<Integer, Integer> index = lemmaEntity.createLemma(site, page);
             indexEntity.createIndex(index, page.getSite(), page);
         }
+
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
     }
 
     public Site createSite(SiteDto siteDto, Status status, String error) {
