@@ -44,7 +44,7 @@ public class CreateSitesMap extends RecursiveAction {
     public void compute() {
         try {
             if (StartAndStop.getStart()) {
-                Thread.sleep(1000);
+                Thread.sleep(600);
                 Document document = Connections.getDocument(url, connectionConfig);
                 dateBaseService.createPage(url, Connections.getCode(), checkContent(document));
                 Elements elements = document.select("a");
