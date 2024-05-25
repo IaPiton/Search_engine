@@ -3,6 +3,7 @@ package searchengine.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +30,9 @@ public interface LemmaRepository extends JpaRepository<Lemma, Long> {
     @Query(value = "select l from Lemma l join Indexes i on l.id = i.lemma.id where i.page in :page")
     List<Lemma> findLemmaByPageId(Page page);
 
-
+    @Override
+    @Modifying
+    @Query("delete from Lemma")
+    void deleteAll();
 
 }

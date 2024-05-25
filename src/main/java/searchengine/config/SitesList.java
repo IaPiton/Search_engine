@@ -15,7 +15,6 @@ import java.util.List;
 @ConfigurationProperties(prefix = "indexing-settings")
 public class SitesList {
     private List<SiteDto> sites;
-
     public SitesList() {
         this.sites = sites;
     }

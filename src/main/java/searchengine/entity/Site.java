@@ -40,7 +40,7 @@ public class Site {
 
     private List<Page> pages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "site",
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true,
             fetch = FetchType.LAZY
     )
     private Set<Lemma> lemmas = new HashSet<>();

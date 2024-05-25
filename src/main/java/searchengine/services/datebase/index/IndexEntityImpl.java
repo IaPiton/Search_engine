@@ -23,19 +23,28 @@ public class IndexEntityImpl implements IndexEntity {
 
     @Override
     public void createIndex(Map<Integer, Integer> indexes, Site site, Page page) {
-        for (Integer lemmaIndex : indexes.keySet()) {
-            Indexes index = new Indexes();
-            index.setPage(page);
-            index.setLemma(lemmaEntity.findById(lemmaIndex));
-            index.setRank(indexes.get(lemmaIndex));
-            saveIndex(index);
-        }
+       try {
+           for (Integer lemmaIndex : indexes.keySet()) {
+               Indexes index = new Indexes();
+               index.setPage(page);
+               index.setLemma(lemmaEntity.findById(lemmaIndex));
+               index.setRank(indexes.get(lemmaIndex));
+               saveIndex(index);
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     @Override
     @Transactional
     public void deleteIndexesByLemma(List<Lemma> lemmaByPage) {
         lemmaByPage.stream().map(Lemma::getId).forEach(indexesRepository::deleteByLemmaId);
+    }
+
+    @Override
+    public void deleteAllIndex() {
+        indexesRepository.deleteAll();
     }
 
     @Transactional

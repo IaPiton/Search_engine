@@ -71,7 +71,7 @@ public class CreateSitesMap extends RecursiveAction {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }catch (Exception e) {
-            log.error(e);
+            e.printStackTrace();
         }
     }
 

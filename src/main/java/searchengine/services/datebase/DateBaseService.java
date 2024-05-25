@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import org.springframework.transaction.annotation.Transactional;
 import searchengine.dto.site.SiteDto;
 
 import searchengine.entity.Lemma;
@@ -36,19 +35,16 @@ public class DateBaseService {
 
     public void createPage(String url, Integer code, String content) throws MalformedURLException {
 
-       try {
-           Site site = siteEntity.getSiteByUrl(url);
-
-        Page page = pageEntity.createPage(site, url, code, content);
-
-        if (page.getCode() == 200) {
-            Map<Integer, Integer> index = lemmaEntity.createLemma(site, page);
-            indexEntity.createIndex(index, page.getSite(), page);
+        try {
+            Site site = siteEntity.getSiteByUrl(url);
+            Page page = pageEntity.createPage(site, url, code, content);
+            if (page.getCode() == 200) {
+                Map<Integer, Integer> index = lemmaEntity.createLemma(site, page);
+                indexEntity.createIndex(index, page.getSite(), page);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
     }
 
     public Site createSite(SiteDto siteDto, Status status, String error) {
@@ -93,10 +89,13 @@ public class DateBaseService {
 
 
     public void deleterAll() {
+        indexEntity.deleteAllIndex();
+        lemmaEntity.deleteAllLemma();
+        pageEntity.deleteAllPage();
         siteEntity.deleteAllSite();
     }
 
-    public List<Lemma> findLemmaByPageId(Page page){
+    public List<Lemma> findLemmaByPageId(Page page) {
         return lemmaEntity.findLemmaByPageId(page);
     }
 

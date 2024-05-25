@@ -44,9 +44,7 @@ public class PageEntityImpl implements PageEntity {
     @Override
     public Page createPage(Site site, String url, Integer code, String content) {
         String path = null;
-
            content.replace("\u0000", "");
-
            Page page = new Page();
            try {
                path = createPath(url);
@@ -60,8 +58,6 @@ public class PageEntityImpl implements PageEntity {
                page.setSite(site);
                return savePage(page);
            }
-
-
         page = pageByPath(path, site);
         return page;
     }
@@ -81,16 +77,16 @@ public class PageEntityImpl implements PageEntity {
         return null;
     }
 
+    @Override
+    public void deleteAllPage() {
+        pageRepository.deleteAll();
+    }
+
     @Transactional(readOnly = true)
     public boolean existsByPath(String path) {
         return pageRepository.existsByPath(path);
     }
 
-
-    @Transactional(readOnly = true)
-    public boolean existsByPath(String path, Site site) {
-        return pageRepository.existsByPathAndSite(path, site);
-    }
 
     @Transactional
     public void deleteByPath(String path) {

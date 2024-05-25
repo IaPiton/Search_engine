@@ -16,7 +16,7 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class ApiController {
+public class IndexingController {
 
     private final StatisticsService statisticsService;
     private final IndexingService indexingService;
@@ -29,17 +29,17 @@ public class ApiController {
 
     @GetMapping("/startIndexing")
     public ResponseEntity<ResponseDto> startIndexing() {
-        log.info("ApiController.startIndexing() - start");
+        log.info("IndexingController.startIndexing() - start");
         return ResponseEntity.ok(indexingService.startIndexing());
     }
     @GetMapping("/stopIndexing")
     public ResponseEntity<ResponseDto> stopIndexing() {
-        log.info("ApiController.stopIndexing() - start");
+        log.info("IndexingController.stopIndexing() - start");
         return ResponseEntity.ok(indexingService.stopIndexing());
     }
     @PostMapping("/indexPage")
     public ResponseEntity<ResponseDto> indexPage(@RequestBody String url) throws URISyntaxException, MalformedURLException {
-        log.info("ApiController.indexPage() - start");
+        log.info("IndexingController.indexPage() - start");
         ResponseDto responseDto = indexingService.indexPage(url);
         return ResponseEntity.ok(responseDto);
     }

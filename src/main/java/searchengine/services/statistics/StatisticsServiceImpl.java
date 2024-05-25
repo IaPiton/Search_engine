@@ -10,8 +10,6 @@ import searchengine.dto.statistics.TotalStatistics;
 
 import searchengine.services.datebase.DateBaseService;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService {
-
-
     private final DateBaseService dateBaseService;
-
 
     @Override
     public StatisticsResponse getStatistics() {
@@ -46,7 +41,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         StatisticsData statisticsOut = new StatisticsData(total, detailedList) {
 
         };
-
         return new StatisticsResponse(true, statisticsOut);
     }
 }

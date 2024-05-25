@@ -9,16 +9,18 @@ import java.util.Map;
 
 public interface LemmaEntity {
 
-    public Long countLemma();
+    Long countLemma();
 
-    public Integer countLemmaBySiteId(Integer siteId);
+    Integer countLemmaBySiteId(Integer siteId);
 
-    public Map<Integer,Integer> createLemma(Site site, Page page);
+    Map<Integer,Integer> createLemma(Site site, Page page);
 
-    public Lemma findById(Integer id);
+    Lemma findById(Integer id);
 
-    public List<Lemma> findLemmaByPageId(Page page);
+    List<Lemma> findLemmaByPageId(Page page);
 
 
     void deleteLemmaByPage(List<Lemma> lemmaByPage);
+
+    void deleteAllLemma();
 }

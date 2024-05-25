@@ -21,7 +21,6 @@ import java.util.Map;
 
 @Component
 @Log4j2
-
 @RequiredArgsConstructor
 public class LemmaEntityImpl implements LemmaEntity {
     private final LemmaRepository lemmaRepository;
@@ -46,24 +45,24 @@ public class LemmaEntityImpl implements LemmaEntity {
     }
 
     public Map<Integer, Integer> saveLemma(Map<String, Integer> lemmaMap, Site site) {
-
-           Map<Integer, Integer> index = new HashMap<>();
-        try { for (String lemmas : lemmaMap.keySet()) {
-               Lemma lemma = new Lemma();
-               if (!existsByLemmaAndSite(lemmas, site)) {
-                   lemma.setLemma(lemmas);
-                   lemma.setSite(site);
-                   lemma.setFrequency(1);
-               } else {
-                   lemma = findFirstByLemmaAndSite(lemmas, site);
-                   lemma.setFrequency(lemma.getFrequency() + 1);
-               }
-               saveLemma(lemma);
-               index.put(lemma.getId(), lemmaMap.get(lemmas));
-           }
-       }catch (Exception e){
-           log.error(e);
-       }
+        Map<Integer, Integer> index = new HashMap<>();
+        try {
+            for (String lemmas : lemmaMap.keySet()) {
+                Lemma lemma = new Lemma();
+                if (!existsByLemmaAndSite(lemmas, site)) {
+                    lemma.setLemma(lemmas);
+                    lemma.setSite(site);
+                    lemma.setFrequency(1);
+                } else {
+                    lemma = findFirstByLemmaAndSite(lemmas, site);
+                    lemma.setFrequency(lemma.getFrequency() + 1);
+                }
+                saveLemma(lemma);
+                index.put(lemma.getId(), lemmaMap.get(lemmas));
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
         return index;
     }
 
@@ -88,6 +87,7 @@ public class LemmaEntityImpl implements LemmaEntity {
         return lemmaRepository.findFirstByLemmaAndSite(lemma, site);
     }
 
+    @Transactional(readOnly = true)
     public List<Lemma> findLemmaByPageId(Page page) {
         return lemmaRepository.findLemmaByPageId(page);
     }
@@ -103,6 +103,11 @@ public class LemmaEntityImpl implements LemmaEntity {
                 lemmaRepository.saveAndFlush(lemma);
             }
         });
+    }
+
+    @Override
+    public void deleteAllLemma() {
+        lemmaRepository.deleteAll();
     }
 }
 

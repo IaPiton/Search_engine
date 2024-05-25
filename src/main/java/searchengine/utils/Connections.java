@@ -29,7 +29,7 @@ public class Connections {
                     .connect(url)
                     .userAgent(connectionConfig.getUserAgent())
                     .referrer(connectionConfig.getReferer())
-                    .timeout(30000)
+                    .timeout(connectionConfig.getTimeout())
                     .ignoreContentType(true);
             doc = connection.get();
             code = connection.response().statusCode();

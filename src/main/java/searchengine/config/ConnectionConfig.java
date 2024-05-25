@@ -13,4 +13,5 @@ import org.springframework.context.annotation.Configuration;
 public class ConnectionConfig {
     private String userAgent;
     private String referer;
+    private Integer timeout;
 }

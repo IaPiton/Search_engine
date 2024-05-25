@@ -8,17 +8,17 @@ import java.net.MalformedURLException;
 
 public interface SiteEntity {
 
-    public Site createSite(SiteDto siteDto, Status status, String error);
+    Site createSite(SiteDto siteDto, Status status, String error);
 
-    public void updateStatusAndErrorSite(Site site, Status status, String error);
-    public Integer countSitesByStatus(Status status);
+   void updateStatusAndErrorSite(Site site, Status status, String error);
+    Integer countSitesByStatus(Status status);
 
-    public Long countSite();
+     Long countSite();
 
     Iterable<Site> getAllSites();
 
-    public Site getSiteByUrl(String url) throws MalformedURLException;
-    public void deleteAllSite();
+    Site getSiteByUrl(String url) throws MalformedURLException;
+    void deleteAllSite();
 
 
 }

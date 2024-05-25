@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "page")
+@Table(name = "page", indexes = @Index(name = "path_index", columnList = "path"))
 @RequiredArgsConstructor
 public class Page {
 
