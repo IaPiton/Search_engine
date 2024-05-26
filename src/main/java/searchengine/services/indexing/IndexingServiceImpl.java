@@ -10,12 +10,14 @@ import searchengine.config.SitesList;
 import searchengine.dto.ResponseDto;
 import searchengine.dto.site.SiteDto;
 import searchengine.entity.Lemma;
+import searchengine.entity.Page;
 import searchengine.entity.Site;
 import searchengine.entity.Status;
 
 import searchengine.services.datebase.DateBaseService;
 import searchengine.utils.CreateSitesMap;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -74,7 +76,7 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     @Override
-    public ResponseDto indexPage(String url)  {
+    public ResponseDto indexPage(String url) throws MalformedURLException {
         String urlReplace = url.toLowerCase().replace("url=", "").replace("%3a", ":").replace("%2f", "/");
         if (StartAndStop.getStart()) {
             return new ResponseDto(false, "Выполняется индексация");
@@ -89,9 +91,10 @@ public class IndexingServiceImpl implements IndexingService {
         return new ResponseDto(true);
     }
 
-    private void deletePage(String urlReplace) {
+    private void deletePage(String urlReplace) throws MalformedURLException {
+        Page page = dateBaseService.findPageByUrl(urlReplace);
         List<Lemma> lemmaByPage = dateBaseService.findLemmaByPageId(dateBaseService.findPageByUrl(urlReplace));
-        dateBaseService.deleteIndexesByLemma(lemmaByPage);
+        dateBaseService.deleteIndexesByLemma(page);
         dateBaseService.deleteLemmaByPage(lemmaByPage);
         dateBaseService.deletePageByPath(urlReplace);
     }

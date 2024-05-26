@@ -1,6 +1,29 @@
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+      format_sql: true
+    open-in-view: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/search-engine
+    username: search-engine
+    password: search-engine
+    driverClassName: org.postgresql.Driver
+    hikari:
+      maximumPoolSize: 100
+      connectionTimeout: 100000
+      maxLifetime: 120000
+      minimumIdle: 100
+
+
 connection-config:
   userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36
   referer: http://google.ru
+  timeout: 30000
 
 indexing-settings:
   sites:

@@ -5,6 +5,7 @@ import searchengine.entity.Site;
 import searchengine.entity.Status;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 public interface SiteEntity {
 
@@ -15,7 +16,7 @@ public interface SiteEntity {
 
      Long countSite();
 
-    Iterable<Site> getAllSites();
+    List<Site> getAllSites();
 
     Site getSiteByUrl(String url) throws MalformedURLException;
     void deleteAllSite();

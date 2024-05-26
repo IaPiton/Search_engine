@@ -3,7 +3,6 @@ package searchengine.services.datebase.site;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.dto.site.SiteDto;
 import searchengine.entity.Site;
@@ -13,6 +12,7 @@ import searchengine.repository.SiteRepository;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 @Component
 @Log4j2
@@ -39,7 +39,7 @@ public class SiteEntityImpl implements SiteEntity {
 
     @Override
     @Transactional(readOnly = true)
-     public Integer countSitesByStatus(Status status) {
+    public Integer countSitesByStatus(Status status) {
         return siteRepository.countByStatus(status);
     }
 
@@ -52,16 +52,15 @@ public class SiteEntityImpl implements SiteEntity {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<Site> getAllSites() {
+    public List<Site> getAllSites() {
         return siteRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-     public Site getSiteByUrl(String url)  {
+    public Site getSiteByUrl(String url) throws MalformedURLException {
         url = getUrl(url);
-        Site site = siteRepository.findByUrl(url);
-        return site;
+        return siteRepository.findByUrl(url);
     }
 
     @Override
@@ -71,13 +70,9 @@ public class SiteEntityImpl implements SiteEntity {
     }
 
 
-    private String getUrl(String url) {
+    private String getUrl(String url) throws MalformedURLException {
         URL urlPath;
-        try {
-            urlPath = new URL(url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        return "https://" + urlPath.getHost() ;
+        urlPath = new URL(url);
+        return "https://" + urlPath.getHost();
     }
 }

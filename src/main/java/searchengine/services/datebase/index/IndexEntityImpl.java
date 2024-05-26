@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.entity.Indexes;
-import searchengine.entity.Lemma;
 import searchengine.entity.Page;
 import searchengine.entity.Site;
 import searchengine.repository.IndexesRepository;
 import searchengine.services.datebase.lemma.LemmaEntity;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,7 +21,7 @@ public class IndexEntityImpl implements IndexEntity {
 
     @Override
     public void createIndex(Map<Integer, Integer> indexes, Site site, Page page) {
-       try {
+
            for (Integer lemmaIndex : indexes.keySet()) {
                Indexes index = new Indexes();
                index.setPage(page);
@@ -31,15 +29,13 @@ public class IndexEntityImpl implements IndexEntity {
                index.setRank(indexes.get(lemmaIndex));
                saveIndex(index);
            }
-       }catch (Exception e){
-           e.printStackTrace();
-       }
+
     }
 
     @Override
     @Transactional
-    public void deleteIndexesByLemma(List<Lemma> lemmaByPage) {
-        lemmaByPage.stream().map(Lemma::getId).forEach(indexesRepository::deleteByLemmaId);
+    public void deleteIndexesByPage(Page page) {
+     indexesRepository.deleteByPage(page);
     }
 
     @Override

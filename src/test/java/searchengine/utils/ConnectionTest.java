@@ -1,5 +1,7 @@
 package searchengine.utils;
 
+
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,10 +13,11 @@ import static org.junit.Assert.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@DisplayName("Тестирование соединения")
 public class ConnectionTest {
 
     @Autowired
-    private Connection connection;
+    private Connections connections;
     @Autowired
     private ConnectionConfig connectionConfig;
     private String url = "https://музей-ямщика.рф/";
@@ -23,15 +26,17 @@ public class ConnectionTest {
 
 
     @Test
+    @DisplayName("Проверка соединения, код 200")
     public void getDocumentTest() {
-    Connection.getDocument(url, connectionConfig);
-    assertThat(200, equalTo(connection.getCode()));
+    connections.getDocument(url, connectionConfig);
+    assertThat(200, equalTo(Connections.getCode()));
     }
 
     @Test
+    @DisplayName("Проверка соединения, код 404")
     public void getDocumentTestError() {
-        Connection.getDocument(badUrl, connectionConfig);
-        assertThat(404, equalTo(connection.getCode()));
+        connections.getDocument(badUrl, connectionConfig);
+        assertThat(404, equalTo(connections.getCode()));
     }
 
 }

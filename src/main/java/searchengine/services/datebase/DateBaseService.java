@@ -1,18 +1,13 @@
 package searchengine.services.datebase;
 
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 import searchengine.dto.site.SiteDto;
-
 import searchengine.entity.Lemma;
 import searchengine.entity.Page;
 import searchengine.entity.Site;
 import searchengine.entity.Status;
-
-
 import searchengine.services.datebase.index.IndexEntity;
 import searchengine.services.datebase.lemma.LemmaEntity;
 import searchengine.services.datebase.page.PageEntity;
@@ -24,7 +19,7 @@ import java.util.Map;
 
 
 @Log4j2
-@Service
+@Component
 @RequiredArgsConstructor
 public class DateBaseService {
 
@@ -33,22 +28,18 @@ public class DateBaseService {
     private final LemmaEntity lemmaEntity;
     private final IndexEntity indexEntity;
 
-    public void createPage(String url, Integer code, String content) throws MalformedURLException {
+    public Site createSite(SiteDto siteDto, Status status, String error) {
+        Site site = siteEntity.createSite(siteDto, status, error);
+        return site;
+    }
 
-        try {
+    public void createPage(String url, Integer code, String content) throws MalformedURLException {
             Site site = siteEntity.getSiteByUrl(url);
             Page page = pageEntity.createPage(site, url, code, content);
             if (page.getCode() == 200) {
                 Map<Integer, Integer> index = lemmaEntity.createLemma(site, page);
                 indexEntity.createIndex(index, page.getSite(), page);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Site createSite(SiteDto siteDto, Status status, String error) {
-        return siteEntity.createSite(siteDto, status, error);
     }
 
     public void updateStatusAndErrorSite(Site site, Status status, String error) {
@@ -57,10 +48,6 @@ public class DateBaseService {
 
     public Integer countSitesByStatus(Status status) {
         return siteEntity.countSitesByStatus(status);
-    }
-
-    public void deletePageByPath(String urlReplace) {
-        pageEntity.deletePageByPath(urlReplace);
     }
 
     public Long countSite() {
@@ -75,7 +62,7 @@ public class DateBaseService {
         return lemmaEntity.countLemma();
     }
 
-    public Iterable<Site> getAllSites() {
+    public List<Site> getAllSites() {
         return siteEntity.getAllSites();
     }
 
@@ -88,27 +75,32 @@ public class DateBaseService {
     }
 
 
-    public void deleterAll() {
-        indexEntity.deleteAllIndex();
-        lemmaEntity.deleteAllLemma();
-        pageEntity.deleteAllPage();
-        siteEntity.deleteAllSite();
+
+    public Page findPageByUrl(String urlReplace) throws MalformedURLException {
+        return pageEntity.findPageByUrl(urlReplace);
     }
 
     public List<Lemma> findLemmaByPageId(Page page) {
         return lemmaEntity.findLemmaByPageId(page);
     }
 
-    public Page findPageByUrl(String urlReplace) {
-        return pageEntity.findPageByUrl(urlReplace);
+    public void deleteIndexesByLemma(Page page) {
+        indexEntity.deleteIndexesByPage(page);
     }
 
     public void deleteLemmaByPage(List<Lemma> lemmaByPage) {
         lemmaEntity.deleteLemmaByPage(lemmaByPage);
     }
 
-    public void deleteIndexesByLemma(List<Lemma> lemmaByPage) {
-        indexEntity.deleteIndexesByLemma(lemmaByPage);
+    public void deletePageByPath(String urlReplace) {
+        pageEntity.deletePageByPath(urlReplace);
+    }
+
+    public void deleterAll() {
+        indexEntity.deleteAllIndex();
+        lemmaEntity.deleteAllLemma();
+        pageEntity.deleteAllPage();
+        siteEntity.deleteAllSite();
     }
 }
 

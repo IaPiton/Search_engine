@@ -1,6 +1,7 @@
 package searchengine.services.datebase.page;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.entity.Page;
@@ -16,14 +17,10 @@ import java.net.URL;
 public class PageEntityImpl implements PageEntity {
     private final PageRepository pageRepository;
 
+    @SneakyThrows
     @Override
     public void deletePageByPath(String urlReplace) {
-        String path;
-        try {
-            path = createPath(urlReplace);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        String path = createPath(urlReplace);
         if (existsByPath(path)) {
             deleteByPath(path);
         }
@@ -41,36 +38,24 @@ public class PageEntityImpl implements PageEntity {
         return pageRepository.countBySiteId(siteId);
     }
 
+
     @Override
-    public Page createPage(Site site, String url, Integer code, String content) {
-        String path = null;
-           content.replace("\u0000", "");
-           Page page = new Page();
-           try {
-               path = createPath(url);
-           } catch (MalformedURLException e) {
-               throw new RuntimeException(e);
-           }
-           if (!pageRepository.existsByPathAndSite(path, site)) {
-               page.setPath(path);
-               page.setCode(code);
-               page.setContent(content);
-               page.setSite(site);
-               return savePage(page);
-           }
-        page = pageByPath(path, site);
-        return page;
+    public Page createPage(Site site, String url, Integer code, String content) throws MalformedURLException {
+        String path = createPath(url);
+        content.replace("\u0000", "");
+        Page page = new Page();
+        page.setPath(path);
+        page.setCode(code);
+        page.setContent(content);
+        page.setSite(site);
+        return savePage(page);
     }
+
 
     @Override
     @Transactional(readOnly = true)
-    public Page findPageByUrl(String urlReplace) {
-        String path = null;
-        try {
-            path = createPath(urlReplace);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    public Page findPageByUrl(String urlReplace) throws MalformedURLException {
+        String path = createPath(urlReplace);
         if (existsByPath(path)) {
             return pageRepository.findByPath(path);
         }
@@ -98,13 +83,9 @@ public class PageEntityImpl implements PageEntity {
         return pageRepository.saveAndFlush(page);
     }
 
-    @Transactional(readOnly = true)
-    public Page pageByPath(String path, Site site) {
-        return pageRepository.findByPathAndSite(path, site);
-    }
-
     private String createPath(String path) throws MalformedURLException {
         URL urlPath = new URL(path);
-        return urlPath.getPath();
+        return urlPath.getPath().isEmpty() ? "path/" : urlPath.getPath();
+
     }
 }

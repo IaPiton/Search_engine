@@ -1,5 +1,6 @@
 package searchengine.service.database;
 
+
 import io.restassured.RestAssured;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.*;
@@ -10,42 +11,43 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import searchengine.config.ConnectionConfig;
-import searchengine.config.StartAndStop;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import searchengine.dto.site.SiteDto;
+import searchengine.entity.Lemma;
+import searchengine.entity.Page;
+import searchengine.entity.Site;
 import searchengine.entity.Status;
-
+import searchengine.repository.IndexesRepository;
+import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 import searchengine.services.datebase.DateBaseService;
 
-import searchengine.services.indexing.IndexingServiceImpl;
-
-
 import java.net.MalformedURLException;
+import java.util.List;
 
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
 @ActiveProfiles("test")
+@DisplayName("Тестирование базы данных")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataBaseServiceTest {
     @LocalServerPort
     private Integer port;
+    @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16.2"
     );
 
-    @BeforeAll
-    static void beforeAll() {
+    @BeforeEach
+    public void beforeAll() {
         postgres.start();
     }
 
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -54,134 +56,130 @@ public class DataBaseServiceTest {
         registry.add("spring.datasource.password", postgres::getPassword);
     }
 
+
+    @Autowired
+    private DateBaseService dateBaseService;
     @Autowired
     private SiteRepository siteRepository;
     @Autowired
     private PageRepository pageRepository;
     @Autowired
-    private DateBaseService dateBaseService;
+    private LemmaRepository lemmaRepository;
     @Autowired
-    private IndexingServiceImpl indexingService;
-    @Autowired
-    private ConnectionConfig connectionConfig;
+    private IndexesRepository indexesRepository;
+
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws MalformedURLException {
+        dateBaseService.deleterAll();
         RestAssured.baseURI = "http://localhost:" + port;
-        pageRepository.deleteAll();
-        siteRepository.deleteAll();
+        createDataBase();
     }
 
-    @SneakyThrows
     @Test
+    @Order(1)
+    @DisplayName("Тестирование создания базы данных")
     public void createPageTest() {
-        createDataBase();
-        assertThat(1L, equalTo(pageRepository.count()));
-
+        assertThat(1L, equalTo(dateBaseService.countSite()));
+        assertThat(2L, equalTo(dateBaseService.countPage()));
+        assertThat(14L, equalTo(dateBaseService.countLemma()));
     }
 
-    @SneakyThrows
     @Test
-    void createSiteTest() {
-        createDataBase();
-        assertThat(1L, equalTo(siteRepository.count()));
-    }
-
-    @SneakyThrows
-    @Test
-    void updateErrorSiteTest() {
-        createDataBase();
-        SiteDto siteDto = new SiteDto();
-        siteDto.setName("test");
-        dateBaseService.updateErrorSite(siteDto, "error");
+    @Order(2)
+    @DisplayName("Тестирование обновления сайта")
+    public void updateStatusAndErrorSiteTest() {
+        Site site = siteRepository.findByName("test");
+        dateBaseService.updateStatusAndErrorSite(site, Status.FAILED, "error 0 pages");
+        assertThat(Status.FAILED, equalTo(siteRepository.findByName("test").getStatus()));
         assertThat("error 0 pages", equalTo(siteRepository.findByName("test").getLastError()));
     }
 
-    @SneakyThrows
     @Test
-    void countSitesByStatusTest() {
-        createDataBase();
+    @Order(3)
+    @DisplayName("Тестирование колличество сайтов по статусу")
+    public void countSitesByStatusTest() {
         assertThat(1, equalTo(dateBaseService.countSitesByStatus(Status.INDEXING)));
     }
 
     @Test
-    void deleterAllTest() throws MalformedURLException {
+    @Order(4)
+    @DisplayName("Тестирование поиска всех сайтов в базе")
+    public void getAllSitesTest() {
+        assertThat(1, equalTo(dateBaseService.getAllSites().size()));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Тестирование колличество сайтов по id сайта")
+    public void countPageBySiteIdTest() {
+        Site site = siteRepository.findByName("test");
+        assertThat(2, equalTo(dateBaseService.countPageBySiteId(site.getId())));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Тестирование колличество лемм по id сайта")
+    public void countLemmaBySiteIdTest() {
+        Site site = siteRepository.findByName("test");
+        assertThat(14, equalTo(dateBaseService.countLemmaBySiteId(site.getId())));
+    }
+
+
+    @Test
+    @Order(7)
+    @SneakyThrows
+    @DisplayName("Тестирование получение страницы по пути сайта")
+    public void findPageByUrlTest() {
+        Page page = dateBaseService.findPageByUrl("https://музей-ямщика.рф");
+        assertThat("Повторное появление леопарда в Осетии позволяет предположить,что леопард постоянно обитает в некоторых районах Северного Кавказа.Кавказа.", equalTo(page.getContent()));
+    }
+
+    @Test
+    @Order(8)
+    @SneakyThrows
+    @DisplayName("Тестирование получение списка лемм по станице")
+    public void findLemmaByPageIdTest() {
+        Page page = dateBaseService.findPageByUrl("https://музей-ямщика.рф");
+        assertThat("повторный", equalTo(dateBaseService.findLemmaByPageId(page).get(0).getLemma()));
+    }
+
+    @Test
+    @Order(9)
+    @SneakyThrows
+    @DisplayName("Тестирование удаление отдельной страницы")
+    public void deleteOnePageTest() {
+        Page page = dateBaseService.findPageByUrl("https://музей-ямщика.рф");
+        List<Lemma> lemmas = dateBaseService.findLemmaByPageId(page);
+        dateBaseService.deleteIndexesByLemma(page);
+        dateBaseService.deleteLemmaByPage(lemmas);
+        dateBaseService.deletePageByPath("https://музей-ямщика.рф");
+        assertThat(1L, equalTo(pageRepository.count()));
+        assertThat(1L, equalTo(lemmaRepository.count()));
+        assertThat(1L, equalTo(indexesRepository.count()));
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Тестирование полного удаления базы данных")
+    public void deleteAllTest() throws MalformedURLException {
+        dateBaseService.deleterAll();
         createDataBase();
         dateBaseService.deleterAll();
-        assertThat(0L, equalTo(siteRepository.count()));
         assertThat(0L, equalTo(pageRepository.count()));
+        assertThat(0L, equalTo(lemmaRepository.count()));
+        assertThat(0L, equalTo(indexesRepository.count()));
     }
-
-    @SneakyThrows
-    @Test
-    void updateStatusSite(){
-        createDataBase();
-        SiteDto siteDto = new SiteDto();
-        siteDto.setName("test");
-        dateBaseService.updateStatusSite(siteDto, Status.FAILED);
-        assertThat(Status.FAILED, equalTo(siteRepository.findByName("test").getStatus()));
-    }
-    @Test
-    void createThreadForIndexingSiteTest(){
-        SiteDto siteDto = new SiteDto();
-        siteDto.setUrl("http://музей-ямщика.рф");
-        siteDto.setName("музей-ямщика.рф");
-        StartAndStop.setStart(true);
-        indexingService.createThreadForIndexingSite(siteDto);
-        assertThat(1L, equalTo(siteRepository.count()));
-        assertThat(5L, equalTo(pageRepository.count()));
-    }
-    @Test
-    void indexPageTest() throws MalformedURLException {
-        indexingService.indexPage("http://музей-ямщика.рф");
-        indexingService.indexPage("http://музей-ямщика.рф");
-        assertThat(1L, equalTo(pageRepository.count()));
-    }
-    @Test
-    void indexPageRunningTrueTest() throws MalformedURLException {
-        StartAndStop.setStart(true);
-        indexingService.indexPage("http://музей-ямщика.рф");
-        assertThat(0L, equalTo(pageRepository.count()));
-    }
-
-    @Test
-    void indexPageSiteFalseTest() throws MalformedURLException {
-        StartAndStop.setStart(true);
-        indexingService.indexPage("http://gavyam.ru");
-        assertThat(0L, equalTo(pageRepository.count()));
-    }
-
-    @Test
-    void createThreadForIndexingSiteErrorTest(){
-        SiteDto siteDto = new SiteDto();
-        siteDto.setUrl("http://музей-ямщика.рфф");
-        siteDto.setName("музей-ямщика.рф");
-        StartAndStop.setStart(true);
-        indexingService.createThreadForIndexingSite(siteDto);
-        assertThat(1L, equalTo(pageRepository.count()));
-    }
-
-    @Test
-    void finishedIndexing() {
-        SiteDto siteDto = new SiteDto();
-        siteDto.setUrl("http://музей-ямщика.рф");
-        siteDto.setName("музей-ямщика.рф");
-       SiteDto siteDtoTest = dateBaseService.createSite(siteDto, Status.INDEXING, "test");
-        StartAndStop.setStart(false);
-        indexingService.finishedIndexing(siteDtoTest);
-        assertThat(Status.FAILED, equalTo(siteRepository.findByName(siteDtoTest.getName()).getStatus()));
-
-
-    }
-
 
     void createDataBase() throws MalformedURLException {
         SiteDto siteDto = new SiteDto();
         siteDto.setName("test");
-        siteDto.setUrl("http://музей-ямщика.рф");
-        SiteDto siteDtoTest = dateBaseService.createSite(siteDto, Status.INDEXING, "test");
-        dateBaseService.createPage("http://музей-ямщика.рф", 200, "test");
+        siteDto.setUrl("https://музей-ямщика.рф");
+        dateBaseService.createSite(siteDto, Status.INDEXING, "test");
+        dateBaseService.createPage("https://музей-ямщика.рф", 200, "Повторное появление леопарда в Осетии позволяет предположить," +
+                "что леопард постоянно обитает в некоторых районах Северного Кавказа." +
+                "Кавказа.");
+        dateBaseService.createPage("https://музей-ямщика.рф/тест", 200, "леопард");
     }
-
 
 }
